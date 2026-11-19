@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informe de Reuniones</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f3ef; --surface:#fcfcfb; --surface-2:#f0efec; --line:#dddbd4;
+  --text:#0b0b0b; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-ink:#ffffff;
+  --s-yo:#2a78d6; --s-otros:#eb6834; --s-3:#1baf7a; --s-4:#eda100; --s-5:#e87ba4; --s-6:#008300; --s-7:#6250d6; --s-8:#e34948;
+  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --grid:#e6e4de;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --line:#383835;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#8f8e86;
+    --accent:#3987e5; --accent-ink:#ffffff;
+    --s-yo:#3987e5; --s-otros:#d95926; --s-3:#199e70; --s-4:#c98500; --s-5:#d55181; --s-6:#0ca30c; --s-7:#9085e9; --s-8:#e66767;
+    --grid:#2c2c2a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --line:#383835;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#8f8e86;
+  --accent:#3987e5; --accent-ink:#ffffff;
+  --s-yo:#3987e5; --s-otros:#d95926; --s-3:#199e70; --s-4:#c98500; --s-5:#d55181; --s-6:#0ca30c; --s-7:#9085e9; --s-8:#e66767;
+  --grid:#2c2c2a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:0}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:0 0 8px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.sub{color:var(--text-2);font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-size:13px;color:var(--text-2);margin-bottom:4px}
+input,textarea,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--text);font:inherit}
+textarea{min-height:60px;resize:vertical}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:8px 14px}
+button:hover{filter:brightness(.97)}
+button:disabled{opacity:.5;cursor:default}
+.btn-main{background:var(--accent);color:var(--accent-ink);border:none;font-weight:600;padding:14px 22px;font-size:17px;border-radius:10px}
+.btn-stop{background:var(--critical);color:#fff;border:none;font-weight:600}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hide{display:none!important}
+.aviso{background:var(--surface-2);border-left:4px solid var(--warning);padding:10px 12px;border-radius:6px;font-size:13px;color:var(--text-2)}
+.err{border-left-color:var(--critical)}
+.ok{border-left-color:var(--good)}
+details>summary{cursor:pointer;color:var(--text-2);font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--text-2)}
+.hist-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.hist-item:last-child{border-bottom:none}
+
+/* grabando */
+.rec-dot{width:12px;height:12px;border-radius:50%;background:var(--critical);display:inline-block;animation:p 1.2s infinite}
+@keyframes p{50%{opacity:.25}}
+.timer{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums}
+.meter{height:10px;background:var(--surface-2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.meter>div{height:100%;width:0;transition:width .1s}
+.thumb{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.cuenta{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--surface);border:2px solid var(--warning);padding:14px 18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:50;max-width:calc(100% - 32px)}
+
+/* procesando */
+.paso{padding:6px 0;color:var(--text-2)}
+.paso.act{color:var(--text);font-weight:600}
+.paso.fin{color:var(--good)}
+.barra{height:8px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.barra>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* informe */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--text-2)}
+.veredicto{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.nota-grande{font-size:48px;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-weight:700;font-size:14px;border:2px solid}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--text-2);font-weight:600}
+td.min{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+.falta{color:var(--critical);font-weight:600}
+.galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.galeria figure{margin:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.galeria img{width:100%;display:block;cursor:zoom-in;aspect-ratio:16/9;object-fit:contain;background:#000}
+.galeria figcaption{padding:8px 10px;font-size:13px}
+.galeria figcaption b{display:block;font-size:14px}
+ul.lista{margin:0;padding-left:20px}
+ul.lista li{margin-bottom:4px}
+.trans{max-height:480px;overflow:auto;font-size:14px}
+.trans p{margin:0 0 6px}
+.trans .h{font-weight:600}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--text-2);font-size:11px}
+.leyenda{display:flex;gap:14px;font-size:12px;color:var(--text-2);margin:6px 0;flex-wrap:wrap}
+.leyenda i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+#tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:60;max-width:260px;display:none}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
+#lightbox img{max-width:100%;max-height:100%}
+.ejemplo{background:var(--warning);color:#000;font-weight:700;text-align:center;padding:6px;border-radius:8px;margin-bottom:12px}
+@media print{
+  body{background:#fff}
+  .no-print,.top button{display:none!important}
+  .card,.kpi{break-inside:avoid;border-color:#ccc}
+  .trans{max-height:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top no-print">
+    <div>
+      <h1>🎙️ Informe de Reuniones</h1>
+      <div class="sub">Graba la reunión virtual, toma pantallazos de lo que presentan y arma el informe al terminar.</div>
+    </div>
+    <div class="row">
+      <button id="btnTema" title="Cambiar tema claro/oscuro">🌓</button>
+    </div>
+  </div>
+
+  <!-- ============ INICIO ============ -->
+  <section id="vInicio">
+    <div class="card">
+      <h2>Nueva reunión</h2>
+      <div class="grid2">
+        <div><label>Título de la reunión</label><input id="inTitulo" placeholder="Ej: Propuesta tarifas V2GO"></div>
+        <div><label>Participantes (opcional, separados por coma)</label><input id="inPart" placeholder="Ej: Alejandro, asesor V2GO"></div>
+      </div>
+      <div style="margin-top:10px">
+        <label>¿Qué tiene que salir de esta reunión? (objetivo — con esto se califica si sirvió)</label>
+        <textarea id="inObjetivo" placeholder="Ej: Saber si V2GO cubre Putumayo, a qué precio y con qué tiempos de entrega"></textarea>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn-main" id="btnIniciar">▶ Iniciar informe de reunión</button>
+        <button id="btnEjemplo">Ver informe de ejemplo</button>
+      </div>
+      <div class="aviso" style="margin-top:14px">
+        <b>Cómo compartir bien:</b> al darle Iniciar, Chrome te pregunta qué compartir.<br>
+        • <b>Google Meet o Teams en el navegador:</b> elige la <b>pestaña</b> de la reunión y deja activado <b>“Compartir también el audio de la pestaña”</b>.<br>
+        • <b>Zoom o Teams de escritorio:</b> elige <b>Toda la pantalla</b> y activa <b>“Compartir también el audio del sistema”</b>.<br>
+        • Usa <b>audífonos</b>: si la otra persona suena por parlantes, tu micrófono la vuelve a grabar como si fueras tú.<br>
+        • Avisa al inicio que estás grabando para tomar notas (es lo correcto y te protege).
+      </div>
+      <div id="msgInicio"></div>
+    </div>
+
+    <div class="card">
+      <h2>Informes guardados</h2>
+      <div id="historial" class="sub">Cargando…</div>
+    </div>
+
+    <div class="card">
+      <details id="detConfig">
+        <summary><b>⚙️ Configuración (llaves de API y opciones)</b></summary>
+        <div class="aviso" style="margin:12px 0">Las llaves se guardan <b>solo en este navegador</b>; nunca van al código ni a GitHub. Si cambias de computador o borras los datos del navegador, tienes que pegarlas otra vez.</div>
+        <div class="grid2">
+          <div><label>Tu nombre (como aparecerá en el informe)</label><input id="cfNombre" placeholder="Jhojan"></div>
+          <div></div>
+          <div><label>Llave de Gemini (transcribe el audio) — aistudio.google.com/apikey</label><input id="cfGemini" type="password" autocomplete="off"></div>
+          <div><label>Modelo de Gemini</label><input id="cfGeminiModel"></div>
+          <div><label>Llave de Claude (arma el informe) — platform.claude.com</label><input id="cfClaude" type="password" autocomplete="off"></div>
+          <div><label>Modelo de Claude</label>
+            <select id="cfClaudeModel">
+              <option value="claude-opus-5-5">Claude Opus 5.5 (mejor informe, ~US$0,30 por reunión de 1 h)</option>
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (más barato)</option>
+            </select>
+          </div>
+          <div><label>Apagar solo tras X minutos de silencio total</label><input id="cfSilencio" type="number" min="1" max="30"></div>
+          <div><label>Transcribir cada X minutos (bloques de audio, 2–8)</label><input id="cfBloque" type="number" min="2" max="8"></div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="btnGuardarCfg">Guardar</button>
+          <button id="btnProbar">Probar conexiones</button>
+        </div>
+        <div id="msgCfg" style="margin-top:10px"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ GRABANDO ============ -->
+  <section id="vGrabando" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="row"><span class="rec-dot"></span><b>Grabando</b> <span class="sub" id="recTitulo"></span></div>
+        <div class="timer" id="recTimer">00:00</div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div>
+          <label>Tu voz (micrófono)</label><div class="meter"><div id="mtYo" style="background:var(--s-yo)"></div></div>
+          <label style="margin-top:10px">Otros (audio de la reunión)</label><div class="meter"><div id="mtOtros" style="background:var(--s-otros)"></div></div>
+          <div class="sub" style="margin-top:10px" id="recEstado"></div>
+          <div class="row" style="margin-top:14px">
+            <input id="inNota" placeholder="Nota rápida (opcional)" style="flex:1;min-width:160px">
+            <button id="btnMarca" title="Marca este momento como importante y toma pantallazo">⭐ Momento clave</button>
+            <button id="btnFoto">📸 Pantallazo</button>
+          </div>
+          <div class="row" style="margin-top:14px">
+            <button class="btn-stop" id="btnTerminar">⏹ Terminar y crear informe</button>
+          </div>
+        </div>
+        <div>
+          <label>Último pantallazo guardado (<span id="nCapturas">0</span>)</label>
+          <img id="ultimaCaptura" class="thumb" alt="">
+          <video id="vid" muted playsinline class="hide"></video>
+        </div>
+      </div>
+      <div class="aviso" style="margin-top:14px">Se apaga sola cuando dejas de compartir, cierras la pestaña de la reunión o hay <span id="txtSil"></span> min de silencio total. Puedes minimizar esta pestaña, pero <b>no la cierres</b> (si se cierra, lo grabado queda guardado y se puede recuperar).</div>
+    </div>
+  </section>
+  <div id="cuenta" class="cuenta hide">
+    <b>¿Terminó la reunión?</b> No se escucha a nadie hace rato. Se apaga en <b id="cuentaN">30</b> s.
+    <div class="row" style="margin-top:8px"><button id="btnSeguir">Seguir grabando</button><button class="btn-stop" id="btnYa">Terminar ya</button></div>
+  </div>
+
+  <!-- ============ PROCESANDO ============ -->
+  <section id="vProcesando" class="hide">
+    <div class="card">
+      <h2>Armando el informe…</h2>
+      <div id="pasos"></div>
+      <div class="barra" style="margin-top:12px"><div id="barraProc"></div></div>
+      <div class="sub" id="procDetalle" style="margin-top:8px"></div>
+      <div id="procError"></div>
+    </div>
+  </section>
+
+  <!-- ============ INFORME ============ -->
+  <section id="vInforme" class="hide">
+    <div class="row no-print" style="margin-bottom:14px">
+      <button id="btnVolver">← Inicio</button>
+      <button id="btnDescargar">⬇ Descargar informe (HTML)</button>
+      <button id="btnImprimir">🖨 Imprimir / PDF</button>
+      <button id="btnCopiar">📋 Copiar resumen</button>
+      <button id="btnRegenerar">↻ Regenerar con IA</button>
+    </div>
+    <div id="informe"></div>
+  </section>
+</div>
+<div id="tip"></div>
+<div id="lightbox"><img alt=""></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   INFORME DE REUNIONES v1.0 — 19-nov-2026
+   Captura: getDisplayMedia (pantalla + audio de la reunión) + micrófono.
+   Audio: AudioWorklet a 16 kHz → WAV por bloques → Gemini transcribe.
+   Pantallazos: compara cuadros cada 2 s; guarda cuando la pantalla cambia
+   y se queda quieta (diapositiva nueva), más los manuales / ⭐.
+   Informe: Claude recibe transcripción + métricas + pantallazos → JSON.
+   Todo se guarda en IndexedDB de este navegador (recuperable).
+   ===================================================================== */
+
+const VERSION = '1.0';
+const UMBRAL_VOZ = 0.012;        // RMS a partir del cual cuenta como voz
+const MUESTREO_MS = 2000;        // cada cuánto mira la pantalla
+const UMBRAL_CAMBIO = 10;        // diferencia media (0-255) para "pantalla nueva"
+const UMBRAL_QUIETO = 4;         // diferencia con el cuadro anterior para "ya se quedó quieta"
+const MIN_ENTRE_AUTO_MS = 8000;  // mínimo entre pantallazos automáticos
+const MAX_AUTO = 150;            // tope de pantallazos automáticos
+const MAX_IMGS_IA = 20;          // pantallazos que se le mandan a Claude
+const RATE = 16000;
+
+/* ---------------- utilidades ---------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+function mmss(seg){ seg = Math.max(0, Math.round(seg||0)); const h=Math.floor(seg/3600), m=Math.floor(seg%3600/60), s=seg%60; return h? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`; }
+function aSeg(txt){ if(typeof txt==='number') return txt; const p=String(txt||'0').split(':').map(Number); return p.reduce((a,b)=>a*60+(b||0),0); }
+function durTxt(seg){ const m=Math.round(seg/60); return m<60? `${m} min` : `${Math.floor(m/60)} h ${m%60} min`; }
+function fechaTxt(ms){ return new Date(ms).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'}); }
+const dormir = ms => new Promise(r=>setTimeout(r,ms));
+function msg(el, html, tipo=''){ $(el).innerHTML = html ? `<div class="aviso ${tipo}" style="margin-top:12px">${html}</div>` : ''; }
+function vista(id){ for(const v of ['vInicio','vGrabando','vProcesando','vInforme']) $(v).classList.toggle('hide', v!==id); window.scrollTo(0,0); }
+function blobADataURL(b){ return new Promise((ok,mal)=>{ const r=new FileReader(); r.onload=()=>ok(r.result); r.onerror=mal; r.readAsDataURL(b); }); }
+async function blobAB64(b){ const d = await blobADataURL(b); return d.slice(d.indexOf(',')+1); }
+function jsonSeguro(txt){
+  if(!txt) throw new Error('Respuesta vacía');
+  txt = String(txt).replace(/```json|```/g,'');
+  const a = Math.min(...['{','['].map(c=>{const i=txt.indexOf(c);return i<0?Infinity:i;}));
+  const b = Math.max(txt.lastIndexOf('}'), txt.lastIndexOf(']'));
+  if(!isFinite(a) || b<a) throw new Error('No vino JSON en la respuesta');
+  return JSON.parse(txt.slice(a,b+1));
+}
+
+/* ---------------- tema ---------------- */
+(function(){ try{ const t=localStorage.getItem('ir_tema'); if(t) document.documentElement.dataset.theme=t; }catch(e){} })();
+$('btnTema').onclick = ()=>{
+  const oscuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const nuevo = oscuro ? 'light' : 'dark';
+  document.documentElement.dataset.theme = nuevo;
+  try{ localStorage.setItem('ir_tema', nuevo); }catch(e){}
+};
+
+/* ---------------- configuración ---------------- */
+const CFG_DEF = { nombre:'', geminiKey:'', geminiModel:'gemini-2.5-flash', claudeKey:'', claudeModel:'claude-opus-5-5', silencioMin:4, bloqueMin:5 };
+let CFG = {...CFG_DEF};
+try{ CFG = {...CFG_DEF, ...JSON.parse(localStorage.getItem('ir_config')||'{}')}; }catch(e){}
+function pintarCfg(){
+  $('cfNombre').value=CFG.nombre; $('cfGemini').value=CFG.geminiKey; $('cfGeminiModel').value=CFG.geminiModel;
+  $('cfClaude').value=CFG.claudeKey; $('cfClaudeModel').value=CFG.claudeModel; $('cfSilencio').value=CFG.silencioMin; $('cfBloque').value=CFG.bloqueMin;
+}
+function leerCfg(){
+  CFG = { nombre:$('cfNombre').value.trim(), geminiKey:$('cfGemini').value.trim(), geminiModel:$('cfGeminiModel').value.trim()||CFG_DEF.geminiModel,
+    claudeKey:$('cfClaude').value.trim(), claudeModel:$('cfClaudeModel').value,
+    silencioMin: Math.min(30,Math.max(1, +$('cfSilencio').value||4)), bloqueMin: Math.min(8,Math.max(2, +$('cfBloque').value||5)) };
+  try{ localStorage.setItem('ir_config', JSON.stringify(CFG)); }catch(e){}
+}
+pintarCfg();
+if(!CFG.geminiKey || !CFG.claudeKey) $('detConfig').open = true;
+$('btnGuardarCfg').onclick = ()=>{ leerCfg(); msg('msgCfg','Guardado ✔','ok'); };
+$('btnProbar').onclick = async ()=>{
+  leerCfg(); msg('msgCfg','Probando…');
+  const r = [];
+  try{
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CFG.geminiModel)}`, {headers:{'x-goog-api-key':CFG.geminiKey}});
+    r.push(res.ok ? '✔ Gemini responde (modelo '+esc(CFG.geminiModel)+')' : '✖ Gemini: '+esc((await res.text()).slice(0,200)));
+  }catch(e){ r.push('✖ Gemini: '+esc(e.message)); }
+  try{
+    await llamarClaude([{role:'user',content:'Responde solo: ok'}], {maxTokens:64});
+    r.push('✔ Claude responde (modelo '+esc(CFG.claudeModel)+')');
+  }catch(e){ r.push('✖ Claude: '+esc(e.message)); }
+  msg('msgCfg', r.join('<br>'), r.some(x=>x.startsWith('✖'))?'err':'ok');
+};
+
+/* ---------------- IndexedDB ---------------- */
+let _db;
+function db(){
+  if(_db) return Promise.resolve(_db);
+  return new Promise((ok,mal)=>{
+    const q = indexedDB.open('informe-reuniones', 1);
+    q.onupgradeneeded = ()=>{
+      const d=q.result;
+      d.createObjectStore('sesiones',{keyPath:'id'});
+      d.createObjectStore('capturas',{keyPath:'id'}).createIndex('sesion','sesion');
+      d.createObjectStore('audios',{keyPath:'id'}).createIndex('sesion','sesion');
+    };
+    q.onsuccess = ()=>{ _db=q.result; ok(_db); };
+    q.onerror = ()=>mal(q.error);
+  });
+}
+async function dbOp(store, modo, fn){
+  const d = await db();
+  return new Promise((ok,mal)=>{
+    const tx = d.transaction(store, modo); const st = tx.objectStore(store);
+    let res; const r = fn(st); if(r) r.onsuccess = ()=>{ res = r.result; };
+    tx.oncomplete = ()=>ok(res); tx.onerror = ()=>mal(tx.error); tx.onabort = ()=>mal(tx.error);
+  });
+}
+const dbPut = (s,v)=>dbOp(s,'readwrite',st=>st.put(v));
+const dbGet = (s,k)=>dbOp(s,'readonly',st=>st.get(k));
+const dbDel = (s,k)=>dbOp(s,'readwrite',st=>st.delete(k));
+const dbTodos = s=>dbOp(s,'readonly',st=>st.getAll());
+const dbPorSesion = (s,id)=>dbOp(s,'readonly',st=>st.index('sesion').getAll(id));
+
+/* ---------------- estado de la grabación ---------------- */
+let S = null;          // sesión actual (se guarda completa en IndexedDB)
+let G = null;          // recursos en vivo (streams, audio, timers)
+
+function nuevaSesion(){
+  return { id: 'r'+Date.now(), creada: Date.now(), titulo: $('inTitulo').value.trim() || 'Reunión '+new Date().toLocaleDateString('es-CO'),
+    objetivo: $('inObjetivo').value.trim(), participantes: $('inPart').value.trim(), nombre: CFG.nombre || 'Yo',
+    estado:'grabando', duracion:0, actividad:[], segmentos:[], marcas:[], nCapturas:0, bloques:0, motivoFin:'', informe:null, version:VERSION };
+}
+const guardarSesion = ()=> S && dbPut('sesiones', S);
+
+/* ---------------- captura ---------------- */
+const WORKLET = `class Grab extends AudioWorkletProcessor{
+  constructor(){super();this.b=new Float32Array(1600);this.n=0;}
+  process(inputs){const inp=inputs[0]; if(inp&&inp.length){const c0=inp[0],c1=inp[1];
+    for(let i=0;i<c0.length;i++){const v=c1?(c0[i]+c1[i])/2:c0[i]; this.b[this.n++]=v;
+      if(this.n===this.b.length){let s=0;for(let j=0;j<this.b.length;j++)s+=this.b[j]*this.b[j];
+        this.port.postMessage({buf:this.b.slice(0),rms:Math.sqrt(s/this.b.length)});this.n=0;}}}
+    return true;}}
+registerProcessor('grabador',Grab);`;
+
+$('btnIniciar').onclick = iniciar;
+async function iniciar(){
+  leerCfg(); msg('msgInicio','');
+  if(!CFG.geminiKey || !CFG.claudeKey){ $('detConfig').open=true; return msg('msgInicio','Falta pegar las llaves de Gemini y de Claude en Configuración (abajo).','err'); }
+  if(!navigator.mediaDevices?.getDisplayMedia) return msg('msgInicio','Este navegador no permite compartir pantalla. Usa Chrome o Edge en computador.','err');
+  let pantalla, mic;
+  try{
+    pantalla = await navigator.mediaDevices.getDisplayMedia({ video:{frameRate:5}, audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},
+      systemAudio:'include', selfBrowserSurface:'exclude', surfaceSwitching:'include' });
+  }catch(e){ return msg('msgInicio','No se compartió la pantalla ('+esc(e.message)+'). Dale otra vez a Iniciar y elige la pestaña o la pantalla de la reunión.','err'); }
+  const audioReunion = pantalla.getAudioTracks()[0];
+  if(!audioReunion){
+    const seguir = confirm('Compartiste SIN audio: no se va a grabar lo que dicen los demás.\n\nAceptar = seguir solo con tu micrófono\nCancelar = volver a compartir activando el audio');
+    if(!seguir){ pantalla.getTracks().forEach(t=>t.stop()); return; }
+  }
+  try{ mic = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }
+  catch(e){ if(!confirm('No se pudo usar el micrófono ('+e.message+'). ¿Seguir sin grabar tu voz?')){ pantalla.getTracks().forEach(t=>t.stop()); return; } }
+
+  S = nuevaSesion(); await guardarSesion();
+  G = { pantalla, mic, inicio: performance.now(), inicioMs: Date.now(), fuentes:{}, ultimaVoz: performance.now(), timers:[], terminando:false,
+        cuentaActiva:false, ultimoAuto:0, nAuto:0, prevMini:null, guardadaMini:null, inicioBloque:0 };
+
+  // audio
+  let ctx = new AudioContext({sampleRate:RATE});
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'})));
+  const silencio = ctx.createGain(); silencio.gain.value = 0; silencio.connect(ctx.destination);
+  G.ctx = ctx;
+  const conectar = (nombre, track)=>{
+    if(!track) return;
+    const src = ctx.createMediaStreamSource(new MediaStream([track]));
+    const node = new AudioWorkletNode(ctx,'grabador');
+    const f = G.fuentes[nombre] = { bufs:[], nivel:0, vozBloque:0 };
+    node.port.onmessage = e=>{
+      const {buf, rms} = e.data; f.bufs.push(buf); f.nivel = rms;
+      if(rms > UMBRAL_VOZ){
+        G.ultimaVoz = performance.now(); f.vozBloque += 0.1;
+        const min = Math.floor(segundosGrabados()/60);
+        while(S.actividad.length<=min) S.actividad.push({yo:0,otros:0});
+        S.actividad[min][nombre] = Math.min(60, S.actividad[min][nombre] + 0.1);
+      }
+    };
+    src.connect(node); node.connect(silencio);
+  };
+  conectar('yo', mic?.getAudioTracks()[0]);
+  conectar('otros', audioReunion);
+  if(ctx.state==='suspended') await ctx.resume();
+
+  // video
+  const vid = $('vid'); vid.srcObject = new MediaStream(pantalla.getVideoTracks()); await vid.play().catch(()=>{});
+  pantalla.getVideoTracks()[0].addEventListener('ended', ()=>terminar('Se dejó de compartir la pantalla o se cerró la reunión'));
+  if(audioReunion) audioReunion.addEventListener('ended', ()=>terminar('Se cerró el audio de la reunión'));
+
+  // timers
+  G.timers.push(setInterval(tick, 200));
+  G.timers.push(setInterval(revisarPantalla, MUESTREO_MS));
+  G.timers.push(setInterval(()=>cerrarBloque(false), CFG.bloqueMin*60000));
+  G.timers.push(setInterval(()=>{ S.duracion = segundosGrabados(); guardarSesion(); }, 15000));
+
+  $('recTitulo').textContent = '· '+S.titulo; $('txtSil').textContent = CFG.silencioMin; $('nCapturas').textContent='0'; $('ultimaCaptura').removeAttribute('src');
+  window.addEventListener('beforeunload', avisoSalir);
+  vista('vGrabando');
+  setTimeout(()=>tomarCaptura('auto', 0), 1500); // primer pantallazo
+  procesarCola(); // transcribe en segundo plano mientras sigue la reunión
+}
+function avisoSalir(e){ if(G && !G.terminando){ e.preventDefault(); e.returnValue=''; } }
+const segundosGrabados = ()=> G ? (performance.now()-G.inicio)/1000 : 0;
+
+function tick(){
+  if(!G || G.terminando) return;
+  const s = segundosGrabados();
+  $('recTimer').textContent = mmss(s);
+  const nv = f => f ? Math.min(100, Math.round(f.nivel*600)) : 0;
+  $('mtYo').style.width = nv(G.fuentes.yo)+'%'; $('mtOtros').style.width = nv(G.fuentes.otros)+'%';
+  const pend = G.pendientes ?? 0;
+  $('recEstado').textContent = `Bloques de audio: ${S.bloques} · transcritos: ${S.segmentos.length? 'sí' : 'aún no'}${pend? ' · en cola: '+pend : ''} · momentos ⭐: ${S.marcas.length}`
+    + (!G.fuentes.otros ? ' · ⚠ sin audio de la reunión' : '') + (!G.fuentes.yo ? ' · ⚠ sin micrófono' : '');
+  // apagado por silencio
+  const silencioSeg = (performance.now()-G.ultimaVoz)/1000;
+  if(s > 120 && silencioSeg > CFG.silencioMin*60 && !G.cuentaActiva) iniciarCuenta();
+}
+function iniciarCuenta(){
+  G.cuentaActiva = true; let n = 30; $('cuentaN').textContent = n; $('cuenta').classList.remove('hide');
+  G.cuentaTimer = setInterval(()=>{
+    if(!G || G.terminando) return clearInterval(G?.cuentaTimer);
+    if((performance.now()-G.ultimaVoz)/1000 < 5){ cancelarCuenta(); return; } // volvió a hablar alguien
+    n--; $('cuentaN').textContent = n;
+    if(n<=0){ clearInterval(G.cuentaTimer); $('cuenta').classList.add('hide'); terminar(`${CFG.silencioMin} min sin que nadie hablara`); }
+  },1000);
+}
+function cancelarCuenta(){ clearInterval(G.cuentaTimer); G.cuentaActiva=false; G.ultimaVoz=performance.now(); $('cuenta').classList.add('hide'); }
+$('btnSeguir').onclick = cancelarCuenta;
+$('btnYa').onclick = ()=>{ clearInterval(G.cuentaTimer); $('cuenta').classList.add('hide'); terminar('Terminada a mano'); };
+$('btnTerminar').onclick = ()=>terminar('Terminada a mano');
+
+/* ---- pantallazos ---- */
+function mini(vid){
+  const c = mini.c || (mini.c = Object.assign(document.createElement('canvas'),{width:64,height:36}));
+  const x = c.getContext('2d',{willReadFrequently:true}); x.drawImage(vid,0,0,64,36);
+  const d = x.getImageData(0,0,64,36).data, g = new Uint8Array(64*36);
+  for(let i=0;i<g.length;i++) g[i] = (d[i*4]*3 + d[i*4+1]*6 + d[i*4+2])/10;
+  return g;
+}
+const difer = (a,b)=>{ if(!a||!b) return 255; let s=0; for(let i=0;i<a.length;i++) s+=Math.abs(a[i]-b[i]); return s/a.length; };
+function revisarPantalla(){
+  const vid = $('vid'); if(!G || G.terminando || !vid.videoWidth) return;
+  const m = mini(vid);
+  const dPrev = difer(m, G.prevMini), dGuard = difer(m, G.guardadaMini);
+  G.prevMini = m;
+  if(dGuard > UMBRAL_CAMBIO && dPrev < UMBRAL_QUIETO && performance.now()-G.ultimoAuto > MIN_ENTRE_AUTO_MS && G.nAuto < MAX_AUTO){
+    tomarCaptura('auto', dGuard);
+  }
+}
+async function tomarCaptura(tipo, cambio, nota=''){
+  const vid = $('vid'); if(!G || !vid.videoWidth) return;
+  const esc_ = Math.min(1, 1600/vid.videoWidth);
+  const c = document.createElement('canvas'); c.width = Math.round(vid.videoWidth*esc_); c.height = Math.round(vid.videoHeight*esc_);
+  c.getContext('2d').drawImage(vid,0,0,c.width,c.height);
+  const blob = await new Promise(r=>c.toBlob(r,'image/jpeg',0.78));
+  G.guardadaMini = mini(vid);
+  if(tipo==='auto'){ G.ultimoAuto = performance.now(); G.nAuto++; }
+  S.nCapturas++;
+  const cap = { id: S.id+'_c'+String(S.nCapturas).padStart(4,'0'), sesion:S.id, n:S.nCapturas, t: segundosGrabados(), tipo, cambio: Math.round(cambio||0), nota, blob };
+  await dbPut('capturas', cap);
+  $('nCapturas').textContent = S.nCapturas;
+  const u = URL.createObjectURL(blob); const img = $('ultimaCaptura'); if(img.dataset.u) URL.revokeObjectURL(img.dataset.u); img.src = u; img.dataset.u = u;
+  guardarSesion();
+}
+$('btnFoto').onclick = ()=>tomarCaptura('manual', 0, $('inNota').value.trim()).then(()=>{$('inNota').value='';});
+$('btnMarca').onclick = ()=>{
+  const nota = $('inNota').value.trim();
+  S.marcas.push({ t: segundosGrabados(), nota }); $('inNota').value='';
+  tomarCaptura('clave', 0, nota);
+  $('btnMarca').textContent='⭐ Marcado ✔'; setTimeout(()=>$('btnMarca').textContent='⭐ Momento clave', 1200);
+};
+
+/* ---- audio por bloques → WAV ---- */
+function aWav(bufs, rateIn){
+  let total = bufs.reduce((a,b)=>a+b.length,0);
+  let datos = new Float32Array(total); let o=0; for(const b of bufs){ datos.set(b,o); o+=b.length; }
+  if(rateIn !== RATE){ // por si el navegador no respetó los 16 kHz
+    const f = rateIn/RATE, n = Math.floor(datos.length/f), out = new Float32Array(n);
+    for(let i=0;i<n;i++) out[i] = datos[Math.floor(i*f)];
+    datos = out;
+  }
+  const buf = new ArrayBuffer(44 + datos.length*2), v = new DataView(buf);
+  const w = (p,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(p+i, s.charCodeAt(i)); };
+  w(0,'RIFF'); v.setUint32(4, 36+datos.length*2, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,RATE,true); v.setUint32(28,RATE*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,datos.length*2,true);
+  let p=44; for(let i=0;i<datos.length;i++,p+=2){ const s=Math.max(-1,Math.min(1,datos[i])); v.setInt16(p, s<0? s*0x8000 : s*0x7fff, true); }
+  return new Blob([buf],{type:'audio/wav'});
+}
+async function cerrarBloque(final){
+  if(!G) return;
+  const ahora = segundosGrabados(), inicio = G.inicioBloque; G.inicioBloque = ahora;
+  const idx = S.bloques++;
+  for(const [nombre, f] of Object.entries(G.fuentes)){
+    const bufs = f.bufs; f.bufs = []; const voz = f.vozBloque; f.vozBloque = 0;
+    if(!bufs.length) continue;
+    const rec = { id:`${S.id}_a${String(idx).padStart(3,'0')}_${nombre}`, sesion:S.id, idx, fuente:nombre, inicio, voz:Math.round(voz) };
+    if(voz < 2){ continue; } // nadie habló en esa pista: no se gasta transcripción
+    rec.blob = aWav(bufs, G.ctx.sampleRate); rec.estado = 'pendiente';
+    await dbPut('audios', rec);
+  }
+  await guardarSesion();
+  if(!final) procesarCola();
+}
+
+/* ---------------- transcripción (Gemini) ---------------- */
+let colaCorriendo = null;
+function procesarCola(){
+  if(colaCorriendo) return colaCorriendo;
+  colaCorriendo = (async ()=>{
+    try{
+      while(true){
+        const pend = (await dbPorSesion('audios', S.id)).filter(a=>a.estado==='pendiente').sort((a,b)=>a.idx-b.idx);
+        if(G) G.pendientes = pend.length;
+        if(!pend.length) break;
+        const a = pend[0];
+        try{
+          const segs = await transcribir(a);
+          for(const s of segs) S.segmentos.push(s);
+          S.segmentos.sort((x,y)=>x.t-y.t);
+          await guardarSesion();
+          await dbDel('audios', a.id);
+        }catch(e){
+          a.intentos = (a.intentos||0)+1; a.error = e.message;
+          if(a.intentos >= 3) a.estado = 'error';
+          await dbPut('audios', a);
+          await dormir(a.intentos*8000);
+        }
+        if(window._progTrans) window._progTrans();
+      }
+    } finally { colaCorriendo = null; }
+  })();
+  return colaCorriendo;
+}
+async function transcribir(a){
+  const quien = a.fuente==='yo'
+    ? `Es la pista del MICRÓFONO de ${S.nombre}. Todo lo que se oye es "${S.nombre}". Si se oye de fondo otra voz lejana (eco de los parlantes), ignórala.`
+    : `Es la pista del AUDIO DE LA REUNIÓN (los demás participantes, NO ${S.nombre}).` + (S.participantes? ` Participantes esperados: ${S.participantes}.` : '')
+      + ` Si alguien dice su nombre o lo nombran, usa ese nombre; si no, usa "Participante 1", "Participante 2"… de forma consistente.`;
+  const prompt = `Transcribe LITERALMENTE este audio de una reunión de trabajo en español (Colombia). ${quien}
+Devuelve SOLO un arreglo JSON, sin texto extra: [{"t":"MM:SS","hablante":"nombre","texto":"lo que dijo"}]
+- "t" es el momento desde el inicio de ESTE audio.
+- Segmentos de 1 a 3 frases. No resumas, no corrijas ni inventes. Si una parte no se entiende escribe [inaudible].
+- Si no hay voz, devuelve [].`;
+  const body = { contents:[{ parts:[ {text:prompt}, {inline_data:{ mime_type:'audio/wav', data: await blobAB64(a.blob) }} ] }],
+    generationConfig:{ responseMimeType:'application/json', temperature:0 } };
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CFG.geminiModel)}:generateContent`,
+    { method:'POST', headers:{'Content-Type':'application/json','x-goog-api-key':CFG.geminiKey}, body: JSON.stringify(body) });
+  if(!res.ok) throw new Error('Gemini '+res.status+': '+(await res.text()).slice(0,300));
+  const j = await res.json();
+  const txt = (j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  if(!txt.trim()) return [];
+  const arr = jsonSeguro(txt);
+  return (Array.isArray(arr)?arr:[]).filter(s=>s && s.texto).map(s=>({
+    t: a.inicio + aSeg(s.t), fuente: a.fuente, hablante: a.fuente==='yo' ? S.nombre : (s.hablante||'Participante'), texto: String(s.texto).trim()
+  }));
+}
+
+/* ---------------- terminar ---------------- */
+async function terminar(motivo){
+  if(!G || G.terminando) return;
+  G.terminando = true; window.removeEventListener('beforeunload', avisoSalir);
+  clearInterval(G.cuentaTimer); $('cuenta').classList.add('hide');
+  G.timers.forEach(clearInterval);
+  S.duracion = segundosGrabados(); S.motivoFin = motivo;
+  await cerrarBloque(true);
+  [G.pantalla, G.mic].forEach(st=>st?.getTracks().forEach(t=>t.stop()));
+  try{ await G.ctx.close(); }catch(e){}
+  S.estado = 'procesando'; await guardarSesion();
+  G = null;
+  generarInforme(S.id);
+}
+
+/* ---------------- informe ---------------- */
+const PASOS = ['Transcribir el audio que falta','Calcular métricas','Escoger pantallazos','Analizar con Claude','Armar el informe'];
+function pasos(act, detalle='', pct=null){
+  $('pasos').innerHTML = PASOS.map((p,i)=>`<div class="paso ${i<act?'fin':i===act?'act':''}">${i<act?'✔':i===act?'⏳':'○'} ${p}</div>`).join('');
+  $('procDetalle').textContent = detalle;
+  $('barraProc').style.width = (pct ?? (act/PASOS.length*100))+'%';
+}
+async function generarInforme(id, soloRehacerIA=false){
+  vista('vProcesando'); $('procError').innerHTML='';
+  try{
+    if(!S || S.id !== id) S = await dbGet('sesiones', id); // si es la misma, se usa la de memoria (la cola puede estar escribiendo en ella)
+    // 1. transcripción pendiente (incluye recuperar errores)
+    pasos(0);
+    const aud = await dbPorSesion('audios', id);
+    for(const a of aud) if(a.estado==='error'){ a.estado='pendiente'; a.intentos=0; await dbPut('audios',a); }
+    const total = aud.length;
+    window._progTrans = async ()=>{ const q=(await dbPorSesion('audios',id)).filter(a=>a.estado==='pendiente').length; pasos(0, `Bloques de audio: ${total-q} de ${total}`, total? (total-q)/total*20 : 20); };
+    await window._progTrans();
+    await procesarCola();
+    const fallidos = (await dbPorSesion('audios', id)).filter(a=>a.estado==='error');
+    // 2. métricas
+    pasos(1);
+    const caps = (await dbPorSesion('capturas', id)).sort((a,b)=>a.t-b.t);
+    const met = metricas(S, caps);
+    // 3. pantallazos
+    pasos(2);
+    const elegidas = escogerCapturas(caps);
+    // 4. Claude
+    pasos(3, 'Puede tardar 1 a 3 minutos…', 50);
+    const ia = await analizar(S, met, elegidas);
+    // 5. armar
+    pasos(4);
+    S.informe = { ia, met, elegidas: elegidas.map(c=>c.id), generado: Date.now(), modelo: CFG.claudeModel, fallidos: fallidos.length };
+    S.estado = 'listo'; await guardarSesion();
+    await mostrarInforme(S.id);
+  }catch(e){
+    console.error(e);
+    $('procError').innerHTML = `<div class="aviso err" style="margin-top:12px"><b>No se pudo terminar el informe:</b> ${esc(e.message)}<br>Lo grabado está guardado. Revisa las llaves en Configuración y dale “Generar informe” en la lista de Inicio.</div>
+      <div class="row" style="margin-top:10px"><button onclick="generarInforme('${esc(id)}')">Reintentar</button><button onclick="irInicio()">Ir al inicio</button></div>`;
+  }
+}
+
+function metricas(S, caps){
+  const act = S.actividad||[];
+  const vozYo = act.reduce((a,m)=>a+m.yo,0), vozOtros = act.reduce((a,m)=>a+m.otros,0);
+  const porHablante = {};
+  for(const s of S.segmentos){ const k = s.hablante||'?'; porHablante[k] = (porHablante[k]||0) + s.texto.split(/\s+/).filter(Boolean).length; }
+  return {
+    duracion: S.duracion, vozYo: Math.round(vozYo), vozOtros: Math.round(vozOtros),
+    pctYo: vozYo+vozOtros ? Math.round(vozYo/(vozYo+vozOtros)*100) : 0,
+    silencioPct: S.duracion ? Math.max(0, Math.round((1 - Math.min(S.duracion, vozYo+vozOtros)/S.duracion)*100)) : 0,
+    palabras: porHablante, totalPalabras: Object.values(porHablante).reduce((a,b)=>a+b,0),
+    capturas: caps.length, marcas: (S.marcas||[]).length,
+    actividad: act, capT: caps.map(c=>({t:c.t,tipo:c.tipo}))
+  };
+}
+function escogerCapturas(caps){
+  const fijas = caps.filter(c=>c.tipo!=='auto');
+  let auto = caps.filter(c=>c.tipo==='auto');
+  const cupo = Math.max(0, MAX_IMGS_IA - fijas.length);
+  if(auto.length > cupo){ const paso = auto.length/cupo; auto = Array.from({length:cupo},(_,i)=>auto[Math.floor(i*paso)]); }
+  return [...fijas.slice(0,MAX_IMGS_IA), ...auto].sort((a,b)=>a.t-b.t);
+}
+async function achicar(blob, ancho=1280){
+  const bmp = await createImageBitmap(blob); const f = Math.min(1, ancho/bmp.width);
+  const c = document.createElement('canvas'); c.width=Math.round(bmp.width*f); c.height=Math.round(bmp.height*f);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  return blobAB64(await new Promise(r=>c.toBlob(r,'image/jpeg',0.72)));
+}
+
+const CRITERIOS = ['Objetivo cumplido','Decisiones tomadas','Compromisos claros (quién y cuándo)','Claridad de la información','Uso del tiempo','Valor para mí'];
+async function analizar(S, met, caps){
+  const trans = S.segmentos.length
+    ? S.segmentos.map(s=>`[${mmss(s.t)}] ${s.hablante}${s.fuente==='yo'?' (YO)':''}: ${s.texto}`).join('\n')
+    : '(No hay transcripción: no se grabó voz o falló la transcripción.)';
+  const marcas = (S.marcas||[]).map(m=>`- ${mmss(m.t)}${m.nota? ': '+m.nota : ''}`).join('\n') || '(ninguno)';
+  const system = `Eres un analista de reuniones de trabajo riguroso y honesto. Escribes en español de Colombia, claro y directo. Tu informe le sirve a ${S.nombre} para decidir si la reunión sirvió y qué hacer después.
+Reglas:
+- Usa SOLO lo que está en la transcripción y en los pantallazos. Si algo no se dijo, pon null o déjalo vacío: nunca inventes nombres, fechas ni cifras.
+- Las líneas "(YO)" son de ${S.nombre}. Las demás son de los otros participantes.
+- Si el micrófono captó eco (una línea de YO repite casi igual lo que otro acaba de decir), ignora esa línea de YO.
+- Califica con dureza justa: un 5 es excepcional. Cada nota lleva su evidencia concreta (cita o minuto).
+- Responde SOLO con un objeto JSON válido, sin texto antes ni después.`;
+  const esquema = `{
+ "titulo": "título corto y claro de la reunión",
+ "resumen": "resumen ejecutivo de 3 a 5 frases",
+ "objetivo_detectado": "para qué era la reunión según lo hablado",
+ "objetivo_cumplido": "sí | parcial | no | sin objetivo definido",
+ "puntajes": [${CRITERIOS.map(c=>`{"criterio":"${c}","nota":1-5,"evidencia":"..."}`).join(',')}],
+ "razon_veredicto": "por qué sirvió o no, en 2 frases",
+ "temas": [{"minuto":"MM:SS","tema":"...","resumen":"...","importancia":1-3}],
+ "decisiones": [{"minuto":"MM:SS","decision":"...","quien":"... o null"}],
+ "compromisos": [{"minuto":"MM:SS","tarea":"...","responsable":"... o null","fecha":"... o null"}],
+ "cifras": [{"minuto":"MM:SS","dato":"qué mide","valor":"número con unidad","fuente":"dicho | pantallazo #n"}],
+ "lo_que_dije": ["puntos clave de ${S.nombre}"],
+ "lo_que_dijeron": [{"quien":"...","punto":"..."}],
+ "riesgos": ["alertas, contradicciones, promesas sin respaldo"],
+ "preguntas_abiertas": ["lo que quedó sin responder"],
+ "pantallazos": [{"n": número de pantallazo, "titulo":"...","que_muestra":"...","por_que_importa":"...","clave": true|false}],
+ "siguiente_paso": "la acción más importante que debería hacer ${S.nombre} ahora"
+}`;
+  const content = [{ type:'text', text:
+`REUNIÓN: ${S.titulo}
+Fecha: ${fechaTxt(S.creada)} · Duración: ${durTxt(met.duracion)}
+Objetivo que ${S.nombre} escribió antes: ${S.objetivo || '(no lo escribió)'}
+Participantes esperados: ${S.participantes || '(no indicados)'}
+
+MÉTRICAS MEDIDAS (son datos reales, úsalas tal cual):
+- Tiempo hablando ${S.nombre}: ${mmss(met.vozYo)} · otros: ${mmss(met.vozOtros)} · ${S.nombre} habló el ${met.pctYo}% del tiempo con voz
+- Palabras por hablante: ${JSON.stringify(met.palabras)}
+- Pantallazos tomados: ${met.capturas} (te mando ${caps.length})
+
+MOMENTOS QUE ${S.nombre.toUpperCase()} MARCÓ COMO CLAVE:
+${marcas}
+
+TRANSCRIPCIÓN:
+${trans}
+
+PANTALLAZOS (vienen abajo, cada uno con su número y minuto):` }];
+  for(const c of caps){
+    content.push({ type:'text', text:`Pantallazo #${c.n} · minuto ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ marcado como clave':c.tipo==='manual'?'tomado a mano':'automático (cambio de pantalla)'}${c.nota? ' · nota: '+c.nota:''}` });
+    content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data: await achicar(c.blob) } });
+  }
+  content.push({ type:'text', text:`Devuelve el informe con EXACTAMENTE esta estructura JSON:\n${esquema}\nEn "pantallazos" incluye solo los que tengan contenido útil (presentaciones, tablas, documentos) y marca "clave": true en máximo 8.` });
+  const txt = await llamarClaude([{role:'user', content}], { system, maxTokens:16000, effort:'high', progreso:n=>pasos(3, `Escribiendo el informe… ${n.toLocaleString('es-CO')} caracteres`, 50+Math.min(40, n/250)) });
+  return jsonSeguro(txt);
+}
+
+async function llamarClaude(messages, {system, maxTokens=4000, effort, progreso}={}){
+  const conFallback = /^claude-(opus-5-5|sonnet-5-5|fable)/.test(CFG.claudeModel);
+  const body = { model: CFG.claudeModel, max_tokens: maxTokens, messages, stream: true };
+  if(system) body.system = system;
+  if(effort) body.output_config = { effort };
+  if(conFallback) body.fallbacks = 'default';
+  const headers = { 'content-type':'application/json', 'x-api-key':CFG.claudeKey, 'anthropic-version':'2026-10-21', 'anthropic-dangerous-direct-browser-access':'true' };
+  if(conFallback) headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
+  let intento = 0;
+  while(true){
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers, body: JSON.stringify(body) });
+    if(res.status===429 || res.status===529 || res.status>=500){
+      if(++intento > 3) throw new Error('Claude '+res.status+' (servicio ocupado). Intenta en unos minutos.');
+      await dormir(intento*15000); continue;
+    }
+    if(!res.ok){
+      let t = await res.text(); try{ t = JSON.parse(t).error?.message || t; }catch(e){}
+      if(res.status===401) throw new Error('La llave de Claude no es válida.');
+      throw new Error('Claude '+res.status+': '+String(t).slice(0,300));
+    }
+    // leer el stream (SSE)
+    const lector = res.body.getReader(), dec = new TextDecoder(); let resto='', texto='', stop='';
+    while(true){
+      const {done, value} = await lector.read(); if(done) break;
+      resto += dec.decode(value,{stream:true});
+      const lineas = resto.split('\n'); resto = lineas.pop();
+      for(const l of lineas){
+        if(!l.startsWith('data:')) continue;
+        let ev; try{ ev = JSON.parse(l.slice(5)); }catch(e){ continue; }
+        if(ev.type==='content_block_delta' && ev.delta?.type==='text_delta'){ texto += ev.delta.text; progreso && progreso(texto.length); }
+        else if(ev.type==='message_delta' && ev.delta?.stop_reason) stop = ev.delta.stop_reason;
+        else if(ev.type==='error') throw new Error('Claude: '+(ev.error?.message||'error en el stream'));
+      }
+    }
+    if(stop==='refusal') throw new Error('Claude se negó a procesar este contenido.');
+    if(stop==='max_tokens') throw new Error('El informe salió demasiado largo y se cortó. Intenta “Regenerar”.');
+    return texto;
+  }
+}
+
+/* ---------------- pintar informe ---------------- */
+function colorStatus(v){ return v==='SIRVIÓ'? 'var(--good)' : v==='PARCIAL'? 'var(--warning)' : 'var(--critical)'; }
+function veredicto(puntajes){
+  const notas = (puntajes||[]).map(p=>+p.nota).filter(n=>n>=1&&n<=5);
+  const total = notas.length ? Math.round(notas.reduce((a,b)=>a+b,0)/notas.length*20) : 0;
+  return { total, v: total>=75?'SIRVIÓ': total>=50?'PARCIAL':'NO SIRVIÓ', icono: total>=75?'✔': total>=50?'◐':'✖' };
+}
+const PALETA = ['var(--s-yo)','var(--s-otros)','var(--s-3)','var(--s-4)','var(--s-5)','var(--s-6)','var(--s-7)','var(--s-8)'];
+
+function grafNotas(puntajes){
+  const W=640, fila=34, H=puntajes.length*fila+24, x0=230, ancho=W-x0-50;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Calificación por criterio">`;
+  for(let k=0;k<=5;k++){ const x=x0+ancho*k/5; s+=`<line x1="${x}" x2="${x}" y1="4" y2="${H-20}" stroke="var(--grid)"/><text x="${x}" y="${H-6}" text-anchor="middle">${k}</text>`; }
+  puntajes.forEach((p,i)=>{
+    const y = 8+i*fila, n = Math.max(0,Math.min(5,+p.nota||0)), w = ancho*n/5;
+    s += `<g data-tip="${esc(p.criterio)}: ${n}/5 — ${esc(p.evidencia||'')}">
+      <rect x="0" y="${y-4}" width="${W}" height="${fila}" fill="transparent"/>
+      <text x="${x0-10}" y="${y+15}" text-anchor="end" style="fill:var(--text);font-size:12px">${esc(p.criterio)}</text>
+      <rect x="${x0}" y="${y+3}" width="${Math.max(w,2)}" height="18" rx="4" fill="var(--accent)"/>
+      <text x="${x0+w+8}" y="${y+16}" style="fill:var(--text);font-weight:600;font-size:12px">${n}${n<=2?' ⚠':''}</text></g>`;
+  });
+  return s+'</svg>';
+}
+function grafParticipacion(met, nombre){
+  const tot = met.vozYo+met.vozOtros || 1, W=640;
+  const wYo = Math.round(W*met.vozYo/tot);
+  let s = `<svg viewBox="0 0 ${W} 40" role="img" aria-label="Tiempo hablando">
+    <rect x="0" y="4" width="${Math.max(wYo-1,0)}" height="26" rx="4" fill="var(--s-yo)" data-tip="${esc(nombre)}: ${mmss(met.vozYo)} (${met.pctYo}%)"/>
+    <rect x="${wYo+1}" y="4" width="${Math.max(W-wYo-1,0)}" height="26" rx="4" fill="var(--s-otros)" data-tip="Otros: ${mmss(met.vozOtros)} (${100-met.pctYo}%)"/>`;
+  if(met.pctYo>=12) s += `<text x="8" y="22" style="fill:#fff;font-weight:600;font-size:12px">${esc(nombre)} ${met.pctYo}%</text>`;
+  if(100-met.pctYo>=12) s += `<text x="${W-8}" y="22" text-anchor="end" style="fill:#fff;font-weight:600;font-size:12px">Otros ${100-met.pctYo}%</text>`;
+  return s+'</svg>';
+}
+function grafPalabras(met, nombre){
+  const arr = Object.entries(met.palabras).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(!arr.length) return '<div class="sub">Sin transcripción.</div>';
+  const max = arr[0][1]||1, W=640, fila=28, H=arr.length*fila+6, x0=170, ancho=W-x0-60;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Palabras por persona">`;
+  arr.forEach(([q,n],i)=>{ const y=4+i*fila, w=ancho*n/max;
+    s += `<g data-tip="${esc(q)}: ${n.toLocaleString('es-CO')} palabras (${Math.round(n/met.totalPalabras*100)}%)"><rect x="0" y="${y-2}" width="${W}" height="${fila}" fill="transparent"/>
+    <text x="${x0-10}" y="${y+15}" text-anchor="end" style="fill:var(--text);font-size:12px">${esc(q)}</text>
+    <rect x="${x0}" y="${y+3}" width="${Math.max(w,2)}" height="16" rx="4" fill="${q===nombre?'var(--s-yo)':'var(--s-otros)'}"/>
+    <text x="${x0+w+8}" y="${y+15}">${n.toLocaleString('es-CO')}</text></g>`; });
+  return s+'</svg>';
+}
+function grafLinea(met, nombre, marcas){
+  const act = met.actividad; const n = Math.max(act.length, Math.ceil(met.duracion/60), 1);
+  const W=640, H=170, x0=34, y0=20, alto=H-y0-28, bw=(W-x0)/n;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Quién habló minuto a minuto">`;
+  for(const v of [0,30,60]){ const y=y0+alto-alto*v/60; s+=`<line x1="${x0}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--grid)"/><text x="${x0-6}" y="${y+4}" text-anchor="end">${v}s</text>`; }
+  for(let i=0;i<n;i++){
+    const m = act[i]||{yo:0,otros:0}, x = x0+i*bw+1, w=Math.max(bw-2,1);
+    const hy = alto*Math.min(60,m.yo)/60, ho = alto*Math.min(60-Math.min(60,m.yo), m.otros)/60;
+    const base = y0+alto;
+    s += `<g data-tip="Minuto ${i+1}: ${esc(nombre)} ${Math.round(m.yo)} s · otros ${Math.round(m.otros)} s"><rect x="${x-1}" y="${y0}" width="${bw}" height="${alto}" fill="transparent"/>`;
+    if(hy>0) s += `<rect x="${x}" y="${base-hy}" width="${w}" height="${hy}" fill="var(--s-yo)"/>`;
+    if(ho>0) s += `<rect x="${x}" y="${base-hy-ho-(hy>0?1:0)}" width="${w}" height="${ho}" fill="var(--s-otros)"/>`;
+    s += '</g>';
+  }
+  for(const c of met.capT){ const x = x0+(c.t/60)*bw; s += `<text x="${x}" y="12" text-anchor="middle" style="font-size:10px" data-tip="Pantallazo ${mmss(c.t)}">${c.tipo==='clave'?'⭐':'▾'}</text>`; }
+  const paso = n>40? 10 : n>15? 5 : 1;
+  for(let i=0;i<=n;i+=paso) s += `<text x="${x0+i*bw}" y="${H-8}" text-anchor="middle">${i}′</text>`;
+  return s+'</svg>';
+}
+
+async function mostrarInforme(id, ejemplo=null){
+  const S_ = ejemplo ? ejemplo.S : await dbGet('sesiones', id);
+  const caps = ejemplo ? ejemplo.caps : (await dbPorSesion('capturas', id)).sort((a,b)=>a.t-b.t);
+  const {ia, met} = S_.informe; const nombre = S_.nombre;
+  const urls = {}; for(const c of caps) urls[c.n] = c.url || URL.createObjectURL(c.blob);
+  const V = veredicto(ia.puntajes);
+  const comp = ia.compromisos||[], dec = ia.decisiones||[];
+  const sinDueño = comp.filter(c=>!c.responsable || c.responsable==='null').length;
+  const sinFecha = comp.filter(c=>!c.fecha || c.fecha==='null').length;
+  const pant = ia.pantallazos||[]; const claves = pant.filter(p=>p.clave); const nombrados = new Set(pant.map(p=>+p.n));
+  const fig = (p, conTexto=true)=> urls[p.n] ? `<figure><img src="${urls[p.n]}" data-n="${p.n}" alt="${esc(p.titulo||'Pantallazo '+p.n)}">
+     <figcaption><b>#${p.n} · ${esc(p.titulo||'')}</b>${conTexto? `<span class="sub">${mmss((caps.find(c=>c.n==p.n)||{}).t)}</span> ${esc(p.que_muestra||'')}${p.por_que_importa? `<br><i>Por qué importa:</i> ${esc(p.por_que_importa)}`:''}`:''}</figcaption></figure>` : '';
+  const lista = arr => arr && arr.length ? `<ul class="lista">${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="sub">Nada registrado.</div>';
+  const vacioNull = v => (!v || v==='null') ? null : v;
+
+  const h = `
+  ${ejemplo? '<div class="ejemplo">INFORME DE EJEMPLO — datos inventados para que veas cómo queda</div>':''}
+  <div class="card">
+    <div class="sub">${esc(fechaTxt(S_.creada))} · ${esc(durTxt(met.duracion))} · terminó: ${esc(S_.motivoFin||'—')}</div>
+    <h2 style="font-size:24px;margin:6px 0 10px">${esc(ia.titulo || S_.titulo)}</h2>
+    <p style="margin:0 0 10px">${esc(ia.resumen)}</p>
+    ${S_.objetivo? `<div class="sub"><b>Objetivo que pusiste:</b> ${esc(S_.objetivo)}</div>`:''}
+    <div class="sub"><b>Objetivo según lo hablado:</b> ${esc(ia.objetivo_detectado||'—')} · <b>¿Se cumplió?</b> ${esc(ia.objetivo_cumplido||'—')}</div>
+  </div>
+
+  <div class="card">
+    <div class="veredicto">
+      <div><div class="nota-grande">${V.total}<span style="font-size:20px;color:var(--text-2)">/100</span></div><div class="sub">calificación de la reunión</div></div>
+      <div><span class="badge" style="border-color:${colorStatus(V.v)};color:var(--text)"><span style="color:${colorStatus(V.v)}">${V.icono}</span> ${V.v}</span>
+        <p style="margin:8px 0 0;max-width:560px">${esc(ia.razon_veredicto||'')}</p></div>
+    </div>
+    <div class="chart" style="margin-top:14px">${grafNotas(ia.puntajes||[])}</div>
+    <div class="sub">Pasa el mouse por cada barra para ver la evidencia. 75+ = sirvió · 50–74 = parcial · menos de 50 = no sirvió.</div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">${esc(durTxt(met.duracion))}</div><div class="l">duración</div></div>
+    <div class="kpi"><div class="v">${met.pctYo}%</div><div class="l">del tiempo hablaste tú</div></div>
+    <div class="kpi"><div class="v">${dec.length}</div><div class="l">decisiones</div></div>
+    <div class="kpi"><div class="v">${comp.length}</div><div class="l">compromisos</div></div>
+    <div class="kpi"><div class="v" style="${sinDueño+sinFecha? 'color:var(--critical)':''}">${sinDueño}/${sinFecha}</div><div class="l">compromisos sin responsable / sin fecha</div></div>
+    <div class="kpi"><div class="v">${met.capturas}</div><div class="l">pantallazos (${claves.length} clave)</div></div>
+  </div>
+
+  <div class="card">
+    <h3>Quién habló</h3>
+    <div class="leyenda"><span><i style="background:var(--s-yo)"></i>${esc(nombre)}</span><span><i style="background:var(--s-otros)"></i>Otros participantes</span></div>
+    <div class="chart">${grafParticipacion(met, nombre)}</div>
+    <h3 style="margin-top:16px">Minuto a minuto <span class="sub">(segundos con voz por minuto · ▾ pantallazo · ⭐ momento clave)</span></h3>
+    <div class="chart">${grafLinea(met, nombre)}</div>
+    <h3 style="margin-top:16px">Palabras por persona</h3>
+    <div class="chart">${grafPalabras(met, nombre)}</div>
+  </div>
+
+  <div class="card"><h3>✅ Decisiones</h3>
+    ${dec.length? `<table><tr><th>Min</th><th>Decisión</th><th>Quién</th></tr>${dec.map(d=>`<tr><td class="min">${esc(d.minuto||'')}</td><td>${esc(d.decision)}</td><td>${esc(vacioNull(d.quien)||'—')}</td></tr>`).join('')}</table>` : '<div class="aviso err">No se tomó ninguna decisión. Si la reunión era para decidir algo, eso ya es un hallazgo.</div>'}
+  </div>
+
+  <div class="card"><h3>📌 Compromisos</h3>
+    ${comp.length? `<table><tr><th>Min</th><th>Tarea</th><th>Responsable</th><th>Fecha</th></tr>${comp.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.tarea)}</td>
+      <td>${vacioNull(c.responsable)? esc(c.responsable) : '<span class="falta">⚠ sin responsable</span>'}</td>
+      <td>${vacioNull(c.fecha)? esc(c.fecha) : '<span class="falta">⚠ sin fecha</span>'}</td></tr>`).join('')}</table>` : '<div class="sub">No quedaron compromisos.</div>'}
+    ${sinDueño+sinFecha? '<div class="aviso" style="margin-top:10px">Un compromiso sin responsable o sin fecha casi nunca se cumple. Cierra esos huecos por escrito hoy.</div>':''}
+  </div>
+
+  <div class="card"><h3>🔢 Cifras mencionadas</h3>
+    ${(ia.cifras||[]).length? `<table><tr><th>Min</th><th>Dato</th><th>Valor</th><th>Fuente</th></tr>${ia.cifras.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.dato)}</td><td><b>${esc(c.valor)}</b></td><td class="sub">${esc(c.fuente||'')}</td></tr>`).join('')}</table>` : '<div class="sub">No se mencionaron cifras.</div>'}
+  </div>
+
+  ${claves.length? `<div class="card"><h3>🖼️ Pantallazos clave</h3><div class="galeria">${claves.map(p=>fig(p)).join('')}</div></div>`:''}
+
+  <div class="card"><h3>🗂️ Temas tratados</h3>
+    ${(ia.temas||[]).length? `<table><tr><th>Min</th><th>Tema</th><th>Resumen</th></tr>${ia.temas.map(t=>`<tr><td class="min">${esc(t.minuto||'')}</td><td><b>${esc(t.tema)}</b> ${'●'.repeat(Math.max(1,Math.min(3,+t.importancia||1)))}</td><td>${esc(t.resumen)}</td></tr>`).join('')}</table>` : '<div class="sub">—</div>'}
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h3>🗣️ Lo que dijiste tú</h3>${lista(ia.lo_que_dije)}</div>
+    <div class="card"><h3>👥 Lo que dijeron los demás</h3>${(ia.lo_que_dijeron||[]).length? `<ul class="lista">${ia.lo_que_dijeron.map(x=>`<li><b>${esc(x.quien)}:</b> ${esc(x.punto)}</li>`).join('')}</ul>` : '<div class="sub">—</div>'}</div>
+    <div class="card"><h3>⚠️ Riesgos y alertas</h3>${lista(ia.riesgos)}</div>
+    <div class="card"><h3>❓ Preguntas abiertas</h3>${lista(ia.preguntas_abiertas)}</div>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--accent)"><h3>➡️ Siguiente paso recomendado</h3><p style="margin:0">${esc(ia.siguiente_paso||'—')}</p></div>
+
+  ${pant.filter(p=>!p.clave).length? `<div class="card"><h3>Otros pantallazos analizados</h3><div class="galeria">${pant.filter(p=>!p.clave).map(p=>fig(p)).join('')}</div></div>`:''}
+
+  ${caps.length > nombrados.size? `<div class="card no-export"><details><summary>Todos los pantallazos (${caps.length})</summary><div class="galeria" style="margin-top:10px">${caps.map(c=>`<figure><img src="${urls[c.n]}" data-n="${c.n}" loading="lazy" alt="Pantallazo ${c.n}"><figcaption>#${c.n} · ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ clave':c.tipo}${c.nota? ' · '+esc(c.nota):''}</figcaption></figure>`).join('')}</div></details></div>`:''}
+
+  <div class="card"><details><summary>Transcripción completa (${S_.segmentos.length} intervenciones)</summary>
+    <div class="trans" style="margin-top:10px">${S_.segmentos.map(s=>`<p><span class="sub">${mmss(s.t)}</span> <span class="h" style="color:${s.fuente==='yo'?'var(--s-yo)':'var(--s-otros)'}">${esc(s.hablante)}:</span> ${esc(s.texto)}</p>`).join('') || '<div class="sub">Sin transcripción.</div>'}</div>
+  </details></div>
+
+  <div class="sub" style="text-align:center">Generado ${esc(fechaTxt(S_.informe.generado||Date.now()))} con ${esc(S_.informe.modelo||'')} · Las notas y el resumen son interpretación de la IA; las métricas de tiempo y conteos son medidos.${S_.informe.fallidos? ` · ⚠ ${S_.informe.fallidos} bloque(s) de audio no se pudieron transcribir.`:''}</div>`;
+  $('informe').innerHTML = h;
+  $('informe').dataset.sesion = ejemplo ? '' : id;
+  $('btnRegenerar').classList.toggle('hide', !!ejemplo);
+  vista('vInforme');
+}
+
+/* ---- acciones del informe ---- */
+$('btnVolver').onclick = ()=>irInicio();
+$('btnImprimir').onclick = ()=>window.print();
+$('btnRegenerar').onclick = ()=>{ const id=$('informe').dataset.sesion; if(id && confirm('¿Volver a pedirle el análisis a Claude? (tiene costo, ~US$0,30)')) generarInforme(id); };
+$('btnCopiar').onclick = async ()=>{
+  const id = $('informe').dataset.sesion; const S_ = id ? await dbGet('sesiones', id) : EJEMPLO.S; const ia = S_.informe.ia; const V = veredicto(ia.puntajes);
+  const t = [`*${ia.titulo||S_.titulo}* (${fechaTxt(S_.creada)})`, `Resultado: ${V.v} (${V.total}/100)`, '', ia.resumen, '',
+    '*Decisiones:*', ...(ia.decisiones||[]).map(d=>'• '+d.decision), '', '*Compromisos:*',
+    ...(ia.compromisos||[]).map(c=>`• ${c.tarea} — ${c.responsable||'¿quién?'} — ${c.fecha||'¿cuándo?'}`), '', '*Siguiente paso:* '+(ia.siguiente_paso||'')].join('\n');
+  try{ await navigator.clipboard.writeText(t); $('btnCopiar').textContent='📋 Copiado ✔'; }catch(e){ $('btnCopiar').textContent='No se pudo copiar'; }
+  setTimeout(()=>$('btnCopiar').textContent='📋 Copiar resumen', 1500);
+};
+$('btnDescargar').onclick = async ()=>{
+  const clon = $('informe').cloneNode(true);
+  clon.querySelectorAll('.no-export').forEach(e=>e.remove());
+  for(const img of clon.querySelectorAll('img')){ // incrustar imágenes
+    try{ const b = await (await fetch(img.src)).blob(); img.src = await blobADataURL(b); }catch(e){}
+  }
+  clon.querySelectorAll('details').forEach(d=>d.setAttribute('open',''));
+  const css = document.querySelector('style').textContent;
+  const titulo = clon.querySelector('h2')?.textContent || 'Informe de reunión';
+  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(titulo)}</title><style>${css}</style></head><body><div class="wrap">${clon.innerHTML}</div></body></html>`;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download = 'Informe - '+titulo.replace(/[\\/:*?"<>|]/g,'').slice(0,80)+'.html'; a.click();
+};
+
+/* ---- tooltip y lightbox ---- */
+document.addEventListener('mousemove', e=>{
+  const g = e.target.closest?.('[data-tip]'); const tip = $('tip');
+  if(!g){ tip.style.display='none'; return; }
+  tip.textContent = g.getAttribute('data-tip'); tip.style.display='block';
+  const x = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left = x+'px'; tip.style.top = (e.clientY+14)+'px';
+});
+document.addEventListener('click', e=>{
+  if(e.target.matches('.galeria img')){ $('lightbox').querySelector('img').src = e.target.src; $('lightbox').style.display='flex'; }
+  else if(e.target.closest('#lightbox')) $('lightbox').style.display='none';
+});
+
+/* ---------------- historial ---------------- */
+async function irInicio(){ vista('vInicio'); await pintarHistorial(); }
+async function pintarHistorial(){
+  const ses = (await dbTodos('sesiones')).sort((a,b)=>b.creada-a.creada);
+  if(!ses.length){ $('historial').innerHTML = 'Todavía no hay reuniones grabadas.'; return; }
+  $('historial').innerHTML = ses.map(s=>{
+    const V = s.informe? veredicto(s.informe.ia.puntajes) : null;
+    const estado = s.estado==='listo' ? `<span class="tag" style="border-color:${colorStatus(V.v)}">${V.icono} ${V.v} · ${V.total}</span>`
+      : `<span class="tag" style="border-color:var(--warning)">⚠ sin informe</span>`;
+    return `<div class="hist-item"><div><b style="color:var(--text)">${esc(s.informe?.ia?.titulo || s.titulo)}</b><br><span class="sub">${esc(fechaTxt(s.creada))} · ${esc(durTxt(s.duracion||0))} · ${s.nCapturas||0} pantallazos</span></div>
+      <div class="row">${estado}
+      ${s.estado==='listo' ? `<button data-ver="${s.id}">Ver</button>` : `<button data-gen="${s.id}">Generar informe</button>`}
+      <button data-borrar="${s.id}" title="Borrar">🗑</button></div></div>`;
+  }).join('');
+}
+$('historial').addEventListener('click', async e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.ver) mostrarInforme(b.dataset.ver);
+  if(b.dataset.gen){ leerCfg(); generarInforme(b.dataset.gen); }
+  if(b.dataset.borrar && confirm('¿Borrar esta reunión con su audio, pantallazos e informe? No se puede deshacer.')){
+    const id = b.dataset.borrar;
+    for(const c of await dbPorSesion('capturas',id)) await dbDel('capturas',c.id);
+    for(const a of await dbPorSesion('audios',id)) await dbDel('audios',a.id);
+    await dbDel('sesiones',id); pintarHistorial();
+  }
+});
+
+/* ---------------- ejemplo ---------------- */
+function lamina(titulo, lineas, color){
+  const c = document.createElement('canvas'); c.width=960; c.height=540; const x=c.getContext('2d');
+  x.fillStyle='#ffffff'; x.fillRect(0,0,960,540); x.fillStyle=color; x.fillRect(0,0,960,90);
+  x.fillStyle='#fff'; x.font='bold 40px Segoe UI, sans-serif'; x.fillText(titulo,40,60);
+  x.fillStyle='#222'; x.font='30px Segoe UI, sans-serif'; lineas.forEach((l,i)=>x.fillText(l,60,170+i*60));
+  return c.toDataURL('image/jpeg',0.8);
+}
+const EJEMPLO = (()=>{
+  const act = Array.from({length:32},(_,i)=>({ yo: i<3?35: i%5===0?40: 8+((i*7)%15), otros: i<3?15: i%5===0?12: 30+((i*11)%20) }));
+  const caps = [
+    {n:1,t:95,tipo:'auto',url:lamina('Propuesta de servicio',['Cobertura nacional: 1.100 municipios','Entrega en 24–72 h en ciudades principales','Recaudo contra entrega incluido'],'#1f4e8c')},
+    {n:2,t:410,tipo:'auto',url:lamina('Tarifas por kilo',['Local: $7.900','Nacional: $11.500','Trayectos especiales: $18.200 + 1,5 % seguro'],'#1f4e8c')},
+    {n:3,t:780,tipo:'clave',nota:'cobertura Putumayo',url:lamina('Cobertura sur del país',['Mocoa: 3–4 días','Puerto Asís: 5 días (vía terrestre)','Sin cobertura en zonas rurales'],'#c0392b')},
+    {n:4,t:1500,tipo:'auto',url:lamina('Indicadores de servicio',['Entregas a tiempo: 94 %','Novedades: 3,2 %','Tiempo de respuesta PQR: 48 h'],'#1f4e8c')}
+  ];
+  const segs = [
+    [5,'yo','Jhojan','Buenos días, gracias por el espacio. Les cuento que estoy grabando para tomar notas.'],
+    [40,'otros','Carolina (V2GO)','Con gusto. Les vamos a presentar la propuesta de servicio y tarifas.'],
+    [410,'otros','Carolina (V2GO)','Para nacional estamos en 11.500 el kilo, y trayectos especiales 18.200 más el 1,5 % de seguro.'],
+    [460,'yo','Jhojan','¿Ese 18.200 aplica para Putumayo o Putumayo tiene otra tarifa?'],
+    [520,'otros','Andrés (V2GO)','Putumayo entra como trayecto especial, sí.'],
+    [790,'yo','Jhojan','¿Y a Mocoa cuántos días se demora?'],
+    [800,'otros','Andrés (V2GO)','Entre tres y cuatro días; Puerto Asís unos cinco.'],
+    [1520,'otros','Carolina (V2GO)','Nuestro cumplimiento es del 94 % de entregas a tiempo.'],
+    [1700,'yo','Jhojan','Listo, entonces quedamos en que nos mandan la propuesta por escrito y hacemos un piloto.'],
+    [1760,'otros','Carolina (V2GO)','Sí, yo les envío la propuesta formal.']
+  ].map(([t,fuente,hablante,texto])=>({t,fuente,hablante,texto}));
+  const ia = {
+    titulo:'Propuesta de V2GO: tarifas y cobertura', resumen:'V2GO presentó su servicio, tarifas por kilo y cobertura. Confirmaron que Putumayo se cobra como trayecto especial ($18.200/kg + 1,5 % de seguro) con 3–5 días de entrega. Se acordó recibir la propuesta por escrito y evaluar un piloto, pero no se definió fecha ni volumen del piloto.',
+    objetivo_detectado:'Conocer tarifas y cobertura de V2GO, sobre todo hacia Putumayo.', objetivo_cumplido:'parcial',
+    puntajes:[{criterio:'Objetivo cumplido',nota:4,evidencia:'Se obtuvo tarifa y tiempos a Putumayo (13:00).'},{criterio:'Decisiones tomadas',nota:3,evidencia:'Se decidió pedir propuesta escrita; el piloto quedó sin definir.'},{criterio:'Compromisos claros (quién y cuándo)',nota:2,evidencia:'Carolina envía la propuesta, pero sin fecha.'},{criterio:'Claridad de la información',nota:4,evidencia:'Láminas con cifras concretas.'},{criterio:'Uso del tiempo',nota:4,evidencia:'32 min sin desvíos.'},{criterio:'Valor para mí',nota:4,evidencia:'Da la cifra para comparar contra Coordinadora.'}],
+    razon_veredicto:'Se consiguió la información clave para comparar, pero los compromisos quedaron sin fecha y el piloto sin condiciones.',
+    temas:[{minuto:'01:35',tema:'Presentación del servicio',resumen:'Cobertura de 1.100 municipios y recaudo incluido.',importancia:2},{minuto:'06:50',tema:'Tarifas',resumen:'Local $7.900, nacional $11.500, especiales $18.200 + 1,5 %.',importancia:3},{minuto:'13:00',tema:'Cobertura Putumayo',resumen:'Mocoa 3–4 días, Puerto Asís 5 días; sin rural.',importancia:3},{minuto:'25:00',tema:'Indicadores',resumen:'94 % a tiempo, 3,2 % novedades.',importancia:2}],
+    decisiones:[{minuto:'28:20',decision:'Pedir la propuesta formal por escrito antes de decidir',quien:'Jhojan'},{minuto:'28:20',decision:'Evaluar un piloto con V2GO',quien:null}],
+    compromisos:[{minuto:'29:20',tarea:'Enviar propuesta formal con tarifas',responsable:'Carolina (V2GO)',fecha:null},{minuto:'28:20',tarea:'Definir volumen y duración del piloto',responsable:null,fecha:null}],
+    cifras:[{minuto:'06:50',dato:'Tarifa nacional por kg',valor:'$11.500',fuente:'pantallazo #2'},{minuto:'06:50',dato:'Tarifa trayecto especial por kg',valor:'$18.200 + 1,5 % seguro',fuente:'dicho'},{minuto:'13:20',dato:'Tiempo a Mocoa',valor:'3–4 días',fuente:'pantallazo #3'},{minuto:'25:20',dato:'Entregas a tiempo',valor:'94 %',fuente:'pantallazo #4'}],
+    lo_que_dije:['Pregunté si Putumayo tiene tarifa propia','Pregunté tiempos a Mocoa','Propuse un piloto y pedir propuesta escrita'],
+    lo_que_dijeron:[{quien:'Carolina (V2GO)',punto:'Tarifas y cumplimiento del 94 %'},{quien:'Andrés (V2GO)',punto:'Putumayo es trayecto especial, 3–5 días'}],
+    riesgos:['El 94 % de cumplimiento es dato de ellos, sin soporte.','Sin cobertura rural en Putumayo.'],
+    preguntas_abiertas:['¿Cuál es el costo de recaudo contra entrega?','¿Quién recoge en bodega y a qué hora?'],
+    pantallazos:[{n:2,titulo:'Tarifas por kilo',que_muestra:'Tabla de tarifas local, nacional y especial',por_que_importa:'Es la cifra para comparar con Coordinadora',clave:true},{n:3,titulo:'Cobertura sur',que_muestra:'Tiempos a Mocoa y Puerto Asís',por_que_importa:'Responde la duda principal de Putumayo',clave:true},{n:4,titulo:'Indicadores',que_muestra:'Cumplimiento y novedades',por_que_importa:'Hay que pedir soporte de estos datos',clave:false}],
+    siguiente_paso:'Escribirle hoy a Carolina pidiendo la propuesta con fecha límite (viernes) e incluir el costo del recaudo.'
+  };
+  const S = { id:'', creada: Date.now()-3600e3, titulo:'Reunión V2GO', objetivo:'Saber si V2GO cubre Putumayo, a qué precio y en cuánto tiempo', nombre:'Jhojan', motivoFin:'Se dejó de compartir la pantalla', segmentos:segs, duracion:1890, marcas:[{t:780,nota:'cobertura Putumayo'}] };
+  S.informe = { ia, met:{ duracion:1890, vozYo:0, vozOtros:0, pctYo:0, palabras:{}, totalPalabras:0, capturas:4, marcas:1, actividad:act, capT:caps.map(c=>({t:c.t,tipo:c.tipo})) }, generado: Date.now(), modelo:'ejemplo' };
+  const m = S.informe.met; m.vozYo = act.reduce((a,x)=>a+x.yo,0); m.vozOtros = act.reduce((a,x)=>a+x.otros,0); m.pctYo = Math.round(m.vozYo/(m.vozYo+m.vozOtros)*100);
+  m.palabras = {'Jhojan':1240,'Carolina (V2GO)':2610,'Andrés (V2GO)':980}; m.totalPalabras = 4830;
+  return { S, caps };
+})();
+$('btnEjemplo').onclick = ()=>mostrarInforme(null, EJEMPLO);
+
+/* ---------------- arranque ---------------- */
+pintarHistorial();
+if(new URLSearchParams(location.search).has('ejemplo')) mostrarInforme(null, EJEMPLO);
+</script>
+</body>
+</html>
