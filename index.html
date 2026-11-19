@@ -48,6 +48,8 @@ h3{font-size:15px;margin:0 0 8px}
 label{display:block;font-size:13px;color:var(--text-2);margin-bottom:4px}
 input,textarea,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--text);font:inherit}
 textarea{min-height:60px;resize:vertical}
+.secreto{-webkit-text-security:disc;font-family:ui-monospace,Consolas,monospace}
+.secreto.ver{-webkit-text-security:none}
 button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:8px 14px}
 button:hover{filter:brightness(.97)}
 button:disabled{opacity:.5;cursor:default}
@@ -168,9 +170,11 @@ ul.lista li{margin-bottom:4px}
         <div class="grid2">
           <div><label>Tu nombre (como aparecerá en el informe)</label><input id="cfNombre" placeholder="Jhojan"></div>
           <div></div>
-          <div><label>Llave de Gemini (transcribe el audio) — aistudio.google.com/apikey</label><input id="cfGemini" type="password" autocomplete="off"></div>
+          <div><label>Llave de Gemini (transcribe el audio) — aistudio.google.com/apikey · empieza por <b>AIza</b></label>
+            <div class="row" style="flex-wrap:nowrap"><input id="cfGemini" class="secreto" type="text" autocomplete="off" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="AIza…"><button type="button" class="ojo" data-para="cfGemini" title="Mostrar / ocultar">👁</button></div></div>
           <div><label>Modelo de Gemini</label><input id="cfGeminiModel"></div>
-          <div><label>Llave de Claude (arma el informe) — platform.claude.com</label><input id="cfClaude" type="password" autocomplete="off"></div>
+          <div><label>Llave de Claude (arma el informe) — platform.claude.com · empieza por <b>sk-ant-</b></label>
+            <div class="row" style="flex-wrap:nowrap"><input id="cfClaude" class="secreto" type="text" autocomplete="off" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="sk-ant-…"><button type="button" class="ojo" data-para="cfClaude" title="Mostrar / ocultar">👁</button></div></div>
           <div><label>Modelo de Claude</label>
             <select id="cfClaudeModel">
               <option value="claude-opus-5-5">Claude Opus 5.5 (mejor informe, ~US$0,30 por reunión de 1 h)</option>
@@ -262,7 +266,7 @@ ul.lista li{margin-bottom:4px}
    Todo se guarda en IndexedDB de este navegador (recuperable).
    ===================================================================== */
 
-const VERSION = '1.0';
+const VERSION = '1.1';
 const UMBRAL_VOZ = 0.012;        // RMS a partir del cual cuenta como voz
 const MUESTREO_MS = 2000;        // cada cuánto mira la pantalla
 const UMBRAL_CAMBIO = 10;        // diferencia media (0-255) para "pantalla nueva"
@@ -311,9 +315,23 @@ function pintarCfg(){
   $('cfNombre').value=CFG.nombre; $('cfGemini').value=CFG.geminiKey; $('cfGeminiModel').value=CFG.geminiModel;
   $('cfClaude').value=CFG.claudeKey; $('cfClaudeModel').value=CFG.claudeModel; $('cfSilencio').value=CFG.silencioMin; $('cfBloque').value=CFG.bloqueMin;
 }
+// quita espacios, saltos de línea, comillas y textos tipo "API key: ..." que se cuelan al copiar
+const limpiarLlave = v => String(v||'').replace(/^[^:]*key\s*[:=]\s*/i,'').replace(/[\s"'`«»“”‘’]/g,'');
+function revisarLlaves(){
+  const p = [], g = CFG.geminiKey, c = CFG.claudeKey;
+  if(!g) p.push('Falta la llave de <b>Gemini</b>.');
+  else if(!/^AIza[0-9A-Za-z_-]{35}$/.test(g)) p.push(`La llave de <b>Gemini</b> no tiene el formato correcto: debe empezar por <b>AIza</b> y tener 39 caracteres. La que pegaste empieza por <b>${esc(g.slice(0,4))}</b> y tiene ${g.length}.`
+    + (g.length>8 && g.length<20 ? ' Parece una contraseña que Chrome llenó solo, no una llave.' : ''));
+  if(!c) p.push('Falta la llave de <b>Claude</b>.');
+  else if(!/^sk-ant-(?!sid)[0-9A-Za-z_-]{20,}$/.test(c)) p.push(`La llave de <b>Claude</b> no tiene el formato correcto: debe empezar por <b>sk-ant-</b>. La que pegaste empieza por <b>${esc(c.slice(0,4))}</b> y tiene ${c.length} caracteres.`
+    + (c.startsWith('sk-ant-sid') ? ' Eso es una cookie de claude.ai, no una llave de API.' : c.length<20 ? ' Parece una contraseña que Chrome llenó solo, no una llave.' : ''));
+  return p;
+}
+document.querySelectorAll('.ojo').forEach(b=>b.onclick=()=>$(b.dataset.para).classList.toggle('ver'));
 function leerCfg(){
-  CFG = { nombre:$('cfNombre').value.trim(), geminiKey:$('cfGemini').value.trim(), geminiModel:$('cfGeminiModel').value.trim()||CFG_DEF.geminiModel,
-    claudeKey:$('cfClaude').value.trim(), claudeModel:$('cfClaudeModel').value,
+  $('cfGemini').value = limpiarLlave($('cfGemini').value); $('cfClaude').value = limpiarLlave($('cfClaude').value);
+  CFG = { nombre:$('cfNombre').value.trim(), geminiKey:$('cfGemini').value, geminiModel:$('cfGeminiModel').value.trim()||CFG_DEF.geminiModel,
+    claudeKey:$('cfClaude').value, claudeModel:$('cfClaudeModel').value,
     silencioMin: Math.min(30,Math.max(1, +$('cfSilencio').value||4)), bloqueMin: Math.min(8,Math.max(2, +$('cfBloque').value||5)) };
   try{ localStorage.setItem('ir_config', JSON.stringify(CFG)); }catch(e){}
 }
@@ -321,11 +339,17 @@ pintarCfg();
 if(!CFG.geminiKey || !CFG.claudeKey) $('detConfig').open = true;
 $('btnGuardarCfg').onclick = ()=>{ leerCfg(); msg('msgCfg','Guardado ✔','ok'); };
 $('btnProbar').onclick = async ()=>{
-  leerCfg(); msg('msgCfg','Probando…');
+  leerCfg();
+  const formato = revisarLlaves();
+  if(formato.length) return msg('msgCfg', '✖ '+formato.join('<br>✖ ')+'<br><br>Borra el campo, copia la llave otra vez desde la página donde la creaste y pégala con Ctrl+V. Con 👁 puedes ver lo que quedó pegado.', 'err');
+  msg('msgCfg','Probando…');
   const r = [];
   try{
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CFG.geminiModel)}`, {headers:{'x-goog-api-key':CFG.geminiKey}});
-    r.push(res.ok ? '✔ Gemini responde (modelo '+esc(CFG.geminiModel)+')' : '✖ Gemini: '+esc((await res.text()).slice(0,200)));
+    let t = ''; if(!res.ok){ t = await res.text(); try{ t = JSON.parse(t).error?.message || t; }catch(e){} }
+    r.push(res.ok ? '✔ Gemini responde (modelo '+esc(CFG.geminiModel)+')'
+      : res.status===404 ? '✖ Gemini: la llave sirve, pero el modelo "'+esc(CFG.geminiModel)+'" no existe. Prueba con gemini-2.5-flash o el que muestre AI Studio.'
+      : '✖ Gemini: '+esc(String(t).slice(0,200)) + (/API key not valid/i.test(t)? ' → La llave está bien escrita pero Google no la reconoce: créala de nuevo en aistudio.google.com/apikey.' : ''));
   }catch(e){ r.push('✖ Gemini: '+esc(e.message)); }
   try{
     await llamarClaude([{role:'user',content:'Responde solo: ok'}], {maxTokens:64});
@@ -388,7 +412,8 @@ registerProcessor('grabador',Grab);`;
 $('btnIniciar').onclick = iniciar;
 async function iniciar(){
   leerCfg(); msg('msgInicio','');
-  if(!CFG.geminiKey || !CFG.claudeKey){ $('detConfig').open=true; return msg('msgInicio','Falta pegar las llaves de Gemini y de Claude en Configuración (abajo).','err'); }
+  const malas = revisarLlaves();
+  if(malas.length){ $('detConfig').open=true; return msg('msgInicio','Antes de grabar, arregla las llaves en Configuración (abajo):<br>• '+malas.join('<br>• '),'err'); }
   if(!navigator.mediaDevices?.getDisplayMedia) return msg('msgInicio','Este navegador no permite compartir pantalla. Usa Chrome o Edge en computador.','err');
   let pantalla, mic;
   try{
@@ -765,7 +790,8 @@ async function llamarClaude(messages, {system, maxTokens=4000, effort, progreso}
     }
     if(!res.ok){
       let t = await res.text(); try{ t = JSON.parse(t).error?.message || t; }catch(e){}
-      if(res.status===401) throw new Error('La llave de Claude no es válida.');
+      if(res.status===401) throw new Error('Anthropic no reconoce la llave de Claude (está bien escrita pero no existe o la borraron). Crea una nueva en platform.claude.com → API keys.');
+      if(/credit balance/i.test(t)) throw new Error('La llave de Claude sirve, pero la cuenta no tiene saldo. Carga saldo en platform.claude.com → Billing.');
       throw new Error('Claude '+res.status+': '+String(t).slice(0,300));
     }
     // leer el stream (SSE)
