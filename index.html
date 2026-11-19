@@ -99,6 +99,7 @@ td.min{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
 .galeria img{width:100%;display:block;cursor:zoom-in;aspect-ratio:16/9;object-fit:contain;background:#000}
 .galeria figcaption{padding:8px 10px;font-size:13px}
 .galeria figcaption b{display:block;font-size:14px}
+.leido{margin:6px 0;padding:6px 8px;background:var(--surface);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;white-space:pre-line}
 ul.lista{margin:0;padding-left:20px}
 ul.lista li{margin-bottom:4px}
 .trans{max-height:480px;overflow:auto;font-size:14px}
@@ -140,15 +141,28 @@ ul.lista li{margin-bottom:4px}
         <div><label>Título de la reunión</label><input id="inTitulo" placeholder="Ej: Propuesta tarifas V2GO"></div>
         <div><label>Participantes (opcional, separados por coma)</label><input id="inPart" placeholder="Ej: Alejandro, asesor V2GO"></div>
       </div>
-      <div style="margin-top:10px">
-        <label>¿Qué tiene que salir de esta reunión? (objetivo — con esto se califica si sirvió)</label>
-        <textarea id="inObjetivo" placeholder="Ej: Saber si V2GO cubre Putumayo, a qué precio y con qué tiempos de entrega"></textarea>
+      <div class="grid2" style="margin-top:10px">
+        <div>
+          <label>🎯 <b>Objetivo:</b> ¿para qué es esta reunión? (una frase)</label>
+          <textarea id="inObjetivo" placeholder="Ej: Decidir si hacemos un piloto con V2GO para envíos a Putumayo"></textarea>
+        </div>
+        <div>
+          <label>✅ <b>Criterios:</b> ¿qué tienes que llevarte para decir que sirvió? (uno por línea)</label>
+          <textarea id="inCriterios" placeholder="Ej:&#10;Precio por kilo a Putumayo&#10;Días de entrega a Mocoa&#10;Fecha de inicio del piloto"></textarea>
+        </div>
       </div>
+      <div class="sub" style="margin-top:6px">Se pueden dejar vacíos: la IA deduce el objetivo y propone criterios. Pero si los escribes, el informe te dice uno por uno si los conseguiste (✓ / ½ / ✗). También los puedes cambiar después, desde el informe.</div>
       <div class="row" style="margin-top:16px">
         <button class="btn-main" id="btnIniciar">▶ Iniciar informe de reunión</button>
         <button id="btnEjemplo">Ver informe de ejemplo</button>
       </div>
-      <div class="aviso" style="margin-top:14px">
+      <div class="aviso ok" style="margin-top:14px">
+        <b>Tu parte (lo demás lo hace la herramienta sola):</b><br>
+        <b>1. Antes (1 min):</b> escribe el objetivo y los criterios aquí arriba.<br>
+        <b>2. Durante:</b> concéntrate en la reunión. Cuando se decida algo, <b>dilo en voz alta y completo</b>: <i>“Entonces quedamos en que Carolina nos manda la propuesta el viernes”</i>. La IA solo encuentra lo que se dice claro. ⭐ es opcional, para lo que tú consideres más importante.<br>
+        <b>3. Al final (1 min):</b> antes de colgar, haz un resumen en voz alta: <i>“Repasemos: decidimos X, Y hace Z para tal fecha, queda pendiente W”</i>. Es lo que más mejora el informe y además deja claros los acuerdos con la otra persona.
+      </div>
+      <div class="aviso" style="margin-top:10px">
         <b>Cómo compartir bien:</b> al darle Iniciar, Chrome te pregunta qué compartir.<br>
         • <b>Google Meet o Teams en el navegador:</b> elige la <b>pestaña</b> de la reunión y deja activado <b>“Compartir también el audio de la pestaña”</b>.<br>
         • <b>Zoom o Teams de escritorio:</b> elige <b>Toda la pantalla</b> y activa <b>“Compartir también el audio del sistema”</b>.<br>
@@ -266,12 +280,13 @@ ul.lista li{margin-bottom:4px}
    Todo se guarda en IndexedDB de este navegador (recuperable).
    ===================================================================== */
 
-const VERSION = '1.3';
+const VERSION = '1.4';
 const UMBRAL_VOZ = 0.012;        // RMS a partir del cual cuenta como voz
 const MUESTREO_MS = 2000;        // cada cuánto mira la pantalla
-const UMBRAL_CAMBIO = 10;        // diferencia media (0-255) para "pantalla nueva"
-const UMBRAL_QUIETO = 4;         // diferencia con el cuadro anterior para "ya se quedó quieta"
-const MIN_ENTRE_AUTO_MS = 8000;  // mínimo entre pantallazos automáticos
+const UMBRAL_CAMBIO = 10;        // diferencia media de una zona (0-255) para "esta zona cambió"
+const UMBRAL_QUIETO = 5;         // diferencia de una zona con el cuadro anterior para "todavía se mueve"
+const UMBRAL_ZONAS = 3;          // zonas cambiadas (de 144) para tomar pantallazo nuevo (~2 % de la pantalla)
+const MIN_ENTRE_AUTO_MS = 6000;  // mínimo entre pantallazos automáticos
 const MAX_AUTO = 150;            // tope de pantallazos automáticos
 const MAX_IMGS_IA = 20;          // pantallazos que se le mandan a Claude
 const RATE = 16000;
@@ -394,9 +409,10 @@ const dbPorSesion = (s,id)=>dbOp(s,'readonly',st=>st.index('sesion').getAll(id))
 let S = null;          // sesión actual (se guarda completa en IndexedDB)
 let G = null;          // recursos en vivo (streams, audio, timers)
 
+const leerCriterios = txt => String(txt||'').split('\n').map(l=>l.replace(/^[\s\-•*\d.)]+/,'').trim()).filter(Boolean).slice(0,10);
 function nuevaSesion(){
   return { id: 'r'+Date.now(), creada: Date.now(), titulo: $('inTitulo').value.trim() || 'Reunión '+new Date().toLocaleDateString('es-CO'),
-    objetivo: $('inObjetivo').value.trim(), participantes: $('inPart').value.trim(), nombre: CFG.nombre || 'Yo',
+    objetivo: $('inObjetivo').value.trim(), criterios: leerCriterios($('inCriterios').value), participantes: $('inPart').value.trim(), nombre: CFG.nombre || 'Yo',
     estado:'grabando', duracion:0, actividad:[], segmentos:[], marcas:[], nCapturas:0, bloques:0, motivoFin:'', informe:null, version:VERSION };
 }
 const guardarSesion = ()=> S && dbPut('sesiones', S);
@@ -470,7 +486,7 @@ async function iniciar(){
   G.timers.push(setInterval(()=>cerrarBloque(false), CFG.bloqueMin*60000));
   G.timers.push(setInterval(()=>{ S.duracion = segundosGrabados(); guardarSesion(); }, 15000));
 
-  $('recTitulo').textContent = '· '+S.titulo; $('txtSil').textContent = CFG.silencioMin; $('nCapturas').textContent='0'; $('ultimaCaptura').removeAttribute('src');
+  $('recTitulo').textContent = '· '+S.titulo + (S.objetivo? ' · 🎯 '+S.objetivo : '') + (S.criterios.length? ' · ✅ '+S.criterios.join(' / ') : ''); $('txtSil').textContent = CFG.silencioMin; $('nCapturas').textContent='0'; $('ultimaCaptura').removeAttribute('src');
   window.addEventListener('beforeunload', avisoSalir);
   vista('vGrabando');
   setTimeout(()=>tomarCaptura('auto', 0), 1500); // primer pantallazo
@@ -507,21 +523,40 @@ $('btnYa').onclick = ()=>{ clearInterval(G.cuentaTimer); $('cuenta').classList.a
 $('btnTerminar').onclick = ()=>terminar('Terminada a mano');
 
 /* ---- pantallazos ---- */
+// La pantalla se reduce a 96×54 y se parte en 16×9 = 144 zonas de 6×6.
+// Un cambio de texto en una diapositiva mueve mucho UNA zona aunque casi no mueva el promedio
+// de toda la pantalla (por eso la v1.0 se perdía diapositivas con el mismo diseño).
+// Las zonas que cambian casi siempre (caras en video, un GIF) se marcan "volátiles" y se ignoran.
+const MW=96, MH=54, CEL=6, NCX=MW/CEL, NCY=MH/CEL;
 function mini(vid){
-  const c = mini.c || (mini.c = Object.assign(document.createElement('canvas'),{width:64,height:36}));
-  const x = c.getContext('2d',{willReadFrequently:true}); x.drawImage(vid,0,0,64,36);
-  const d = x.getImageData(0,0,64,36).data, g = new Uint8Array(64*36);
+  const c = mini.c || (mini.c = Object.assign(document.createElement('canvas'),{width:MW,height:MH}));
+  const x = c.getContext('2d',{willReadFrequently:true}); x.drawImage(vid,0,0,MW,MH);
+  const d = x.getImageData(0,0,MW,MH).data, g = new Uint8Array(MW*MH);
   for(let i=0;i<g.length;i++) g[i] = (d[i*4]*3 + d[i*4+1]*6 + d[i*4+2])/10;
   return g;
 }
-const difer = (a,b)=>{ if(!a||!b) return 255; let s=0; for(let i=0;i<a.length;i++) s+=Math.abs(a[i]-b[i]); return s/a.length; };
+function difZonas(a,b){
+  const out = new Float32Array(NCX*NCY);
+  if(!a||!b){ out.fill(255); return out; }
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){ const i=y*MW+x; out[((y/CEL)|0)*NCX + ((x/CEL)|0)] += Math.abs(a[i]-b[i]); }
+  for(let k=0;k<out.length;k++) out[k] /= CEL*CEL;
+  return out;
+}
 function revisarPantalla(){
   const vid = $('vid'); if(!G || G.terminando || !vid.videoWidth) return;
   const m = mini(vid);
-  const dPrev = difer(m, G.prevMini), dGuard = difer(m, G.guardadaMini);
+  const dPrev = difZonas(m, G.prevMini), dGuard = difZonas(m, G.guardadaMini);
   G.prevMini = m;
-  if(dGuard > UMBRAL_CAMBIO && dPrev < UMBRAL_QUIETO && performance.now()-G.ultimoAuto > MIN_ENTRE_AUTO_MS && G.nAuto < MAX_AUTO){
-    tomarCaptura('auto', dGuard);
+  if(!G.volatil) G.volatil = new Float32Array(NCX*NCY);
+  let moviendo = 0, cambiadas = 0;
+  for(let k=0;k<dPrev.length;k++){
+    G.volatil[k] = G.volatil[k]*0.8 + (dPrev[k] > UMBRAL_QUIETO ? 0.2 : 0);
+    if(G.volatil[k] > 0.35) continue;          // zona con video o animación: no cuenta
+    if(dPrev[k] > UMBRAL_QUIETO) moviendo++;     // todavía está cambiando (transición, scroll)
+    else if(dGuard[k] > UMBRAL_CAMBIO) cambiadas++; // cambió respecto al último pantallazo y ya se quedó quieta
+  }
+  if(cambiadas >= UMBRAL_ZONAS && moviendo <= 2 && performance.now()-G.ultimoAuto > MIN_ENTRE_AUTO_MS && G.nAuto < MAX_AUTO){
+    tomarCaptura('auto', cambiadas);
   }
 }
 async function tomarCaptura(tipo, cambio, nota=''){
@@ -734,24 +769,26 @@ Reglas:
  "titulo": "título corto y claro de la reunión",
  "resumen": "resumen ejecutivo de 3 a 5 frases",
  "objetivo_detectado": "para qué era la reunión según lo hablado",
- "objetivo_cumplido": "sí | parcial | no | sin objetivo definido",
+ "objetivo_cumplido": "sí | parcial | no",
+ "checklist": [{"criterio":"...","estado":"✓ | ½ | ✗","evidencia":"qué se dijo o mostró, o qué faltó","minuto":"MM:SS o null"}],
  "puntajes": [${CRITERIOS.map(c=>`{"criterio":"${c}","nota":1-5,"evidencia":"..."}`).join(',')}],
  "razon_veredicto": "por qué sirvió o no, en 2 frases",
  "temas": [{"minuto":"MM:SS","tema":"...","resumen":"...","importancia":1-3}],
- "decisiones": [{"minuto":"MM:SS","decision":"...","quien":"... o null"}],
+ "decisiones": [{"minuto":"MM:SS","decision":"...","quien":"... o null","calidad":"concreta | vaga","falta":"qué le falta para ser concreta (quién, qué exactamente, cuándo, cuánto) o null"}],
  "compromisos": [{"minuto":"MM:SS","tarea":"...","responsable":"... o null","fecha":"... o null"}],
  "cifras": [{"minuto":"MM:SS","dato":"qué mide","valor":"número con unidad","fuente":"dicho | pantallazo #n"}],
  "lo_que_dije": ["puntos clave de ${S.nombre}"],
  "lo_que_dijeron": [{"quien":"...","punto":"..."}],
  "riesgos": ["alertas, contradicciones, promesas sin respaldo"],
  "preguntas_abiertas": ["lo que quedó sin responder"],
- "pantallazos": [{"n": número de pantallazo, "titulo":"...","que_muestra":"...","por_que_importa":"...","clave": true|false}],
+ "pantallazos": [{"n": número de pantallazo, "titulo":"...","que_muestra":"una frase","texto":"el texto y los datos importantes que SE LEEN en la imagen, copiados tal cual (títulos, cifras, filas de tablas), separados por ' · '","por_que_importa":"...","util": true|false,"clave": true|false}],
  "siguiente_paso": "la acción más importante que debería hacer ${S.nombre} ahora"
 }`;
   const content = [{ type:'text', text:
 `REUNIÓN: ${S.titulo}
 Fecha: ${fechaTxt(S.creada)} · Duración: ${durTxt(met.duracion)}
-Objetivo que ${S.nombre} escribió antes: ${S.objetivo || '(no lo escribió)'}
+Objetivo que ${S.nombre} escribió antes: ${S.objetivo || '(no lo escribió: dedúcelo de lo hablado)'}
+Criterios de éxito que ${S.nombre} escribió: ${(S.criterios||[]).length ? '\n'+S.criterios.map((c,i)=>`  ${i+1}. ${c}`).join('\n') : '(no escribió: propón tú 3 criterios razonables según el objetivo y evalúalos)'}
 Participantes esperados: ${S.participantes || '(no indicados)'}
 
 MÉTRICAS MEDIDAS (son datos reales, úsalas tal cual):
@@ -770,7 +807,11 @@ PANTALLAZOS (vienen abajo, cada uno con su número y minuto):` }];
     content.push({ type:'text', text:`Pantallazo #${c.n} · minuto ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ marcado como clave':c.tipo==='manual'?'tomado a mano':'automático (cambio de pantalla)'}${c.nota? ' · nota: '+c.nota:''}` });
     content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data: await achicar(c.blob) } });
   }
-  content.push({ type:'text', text:`Devuelve el informe con EXACTAMENTE esta estructura JSON:\n${esquema}\nEn "pantallazos" incluye solo los que tengan contenido útil (presentaciones, tablas, documentos) y marca "clave": true en máximo 8.` });
+  content.push({ type:'text', text:`Devuelve el informe con EXACTAMENTE esta estructura JSON:\n${esquema}
+- "checklist": un elemento por cada criterio de éxito, en el mismo orden. ✓ = se consiguió completo, ½ = a medias o sin precisión, ✗ = no se consiguió.
+- "objetivo_cumplido" debe ser coherente con el checklist.
+- "decisiones": una decisión es "concreta" solo si dice qué se hace, quién lo hace y cuándo (o cuánto). Si falta algo es "vaga" y en "falta" dices qué le falta.
+- "pantallazos": incluye TODOS los pantallazos que te mandé, uno por número. "util": false si solo muestra caras, escritorio vacío o nada legible (en ese caso "texto" vacío). En "texto" copia lo que se lee, no lo resumas. Marca "clave": true en máximo 8.` });
   const txt = CFG.claudeKey
     ? await llamarClaude([{role:'user', content}], { system, maxTokens:16000, effort:'high', progreso:n=>pasos(3, `Escribiendo el informe… ${n.toLocaleString('es-CO')} caracteres`, 50+Math.min(40, n/250)) })
     : await informeConGemini(system, content);
@@ -913,9 +954,14 @@ async function mostrarInforme(id, ejemplo=null){
   const comp = ia.compromisos||[], dec = ia.decisiones||[];
   const sinDueño = comp.filter(c=>!c.responsable || c.responsable==='null').length;
   const sinFecha = comp.filter(c=>!c.fecha || c.fecha==='null').length;
-  const pant = ia.pantallazos||[]; const claves = pant.filter(p=>p.clave); const nombrados = new Set(pant.map(p=>+p.n));
+  const pant = ia.pantallazos||[]; const claves = pant.filter(p=>p.clave); const nombrados = new Set(pant.filter(p=>p.util!==false).map(p=>+p.n));
+  const porN = {}; for(const p of pant) porN[+p.n] = p;
+  const textoLeido = p => p && p.texto ? `<div class="leido"><span class="sub">Lo que dice:</span> ${esc(p.texto)}</div>` : '';
   const fig = (p, conTexto=true)=> urls[p.n] ? `<figure><img src="${urls[p.n]}" data-n="${p.n}" alt="${esc(p.titulo||'Pantallazo '+p.n)}">
-     <figcaption><b>#${p.n} · ${esc(p.titulo||'')}</b>${conTexto? `<span class="sub">${mmss((caps.find(c=>c.n==p.n)||{}).t)}</span> ${esc(p.que_muestra||'')}${p.por_que_importa? `<br><i>Por qué importa:</i> ${esc(p.por_que_importa)}`:''}`:''}</figcaption></figure>` : '';
+     <figcaption><b>#${p.n} · ${esc(p.titulo||'')}</b>${conTexto? `<span class="sub">${mmss((caps.find(c=>c.n==p.n)||{}).t)}</span> ${esc(p.que_muestra||'')}${textoLeido(p)}${p.por_que_importa? `<i>Por qué importa:</i> ${esc(p.por_que_importa)}`:''}`:''}</figcaption></figure>` : '';
+  const check = ia.checklist||[];
+  const icoCheck = e => /✓|si|sí/i.test(e)? ['✓','var(--good)'] : /½|parcial|medias/i.test(e)? ['½','var(--warning)'] : ['✗','var(--critical)'];
+  const logrados = check.filter(c=>icoCheck(c.estado)[0]==='✓').length;
   const lista = arr => arr && arr.length ? `<ul class="lista">${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="sub">Nada registrado.</div>';
   const vacioNull = v => (!v || v==='null') ? null : v;
 
@@ -925,8 +971,20 @@ async function mostrarInforme(id, ejemplo=null){
     <div class="sub">${esc(fechaTxt(S_.creada))} · ${esc(durTxt(met.duracion))} · terminó: ${esc(S_.motivoFin||'—')}</div>
     <h2 style="font-size:24px;margin:6px 0 10px">${esc(ia.titulo || S_.titulo)}</h2>
     <p style="margin:0 0 10px">${esc(ia.resumen)}</p>
-    ${S_.objetivo? `<div class="sub"><b>Objetivo que pusiste:</b> ${esc(S_.objetivo)}</div>`:''}
-    <div class="sub"><b>Objetivo según lo hablado:</b> ${esc(ia.objetivo_detectado||'—')} · <b>¿Se cumplió?</b> ${esc(ia.objetivo_cumplido||'—')}</div>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Objetivo y criterios</h3>
+    <div><b>Objetivo${S_.objetivo? '' : ' (deducido por la IA)'}:</b> ${esc(S_.objetivo || ia.objetivo_detectado || '—')} · <b>¿Se cumplió?</b> ${esc(ia.objetivo_cumplido||'—')}</div>
+    ${check.length? `<table style="margin-top:10px"><tr><th></th><th>Criterio${(S_.criterios||[]).length? '' : ' <span class="sub">(propuestos por la IA porque no escribiste criterios)</span>'}</th><th>Evidencia</th><th>Min</th></tr>
+      ${check.map(c=>{ const [ic,col]=icoCheck(c.estado); return `<tr><td style="font-size:18px;font-weight:700;color:${col}">${ic}</td><td><b>${esc(c.criterio)}</b></td><td>${esc(c.evidencia||'')}</td><td class="min">${esc(vacioNull(c.minuto)||'')}</td></tr>`; }).join('')}</table>
+      <div class="sub" style="margin-top:6px">${logrados} de ${check.length} criterios conseguidos completos.</div>` : ''}
+    ${ejemplo? '' : `<details class="no-print no-export" style="margin-top:10px"><summary>✏ Cambiar objetivo y criterios y volver a calificar</summary>
+      <div class="grid2" style="margin-top:8px">
+        <div><label>Objetivo</label><textarea id="edObjetivo">${esc(S_.objetivo||'')}</textarea></div>
+        <div><label>Criterios (uno por línea)</label><textarea id="edCriterios">${esc((S_.criterios||[]).join('\n'))}</textarea></div>
+      </div>
+      <button style="margin-top:8px" id="btnRecalificar">Guardar y volver a calificar</button></details>`}
   </div>
 
   <div class="card">
@@ -959,7 +1017,9 @@ async function mostrarInforme(id, ejemplo=null){
   </div>
 
   <div class="card"><h3>✅ Decisiones</h3>
-    ${dec.length? `<table><tr><th>Min</th><th>Decisión</th><th>Quién</th></tr>${dec.map(d=>`<tr><td class="min">${esc(d.minuto||'')}</td><td>${esc(d.decision)}</td><td>${esc(vacioNull(d.quien)||'—')}</td></tr>`).join('')}</table>` : '<div class="aviso err">No se tomó ninguna decisión. Si la reunión era para decidir algo, eso ya es un hallazgo.</div>'}
+    ${dec.length? `<table><tr><th>Min</th><th>Decisión</th><th>Quién</th><th>¿Concreta?</th></tr>${dec.map(d=>`<tr><td class="min">${esc(d.minuto||'')}</td><td>${esc(d.decision)}</td><td>${esc(vacioNull(d.quien)||'—')}</td>
+      <td>${/vaga/i.test(d.calidad||'') ? `<span class="falta">⚠ vaga</span>${vacioNull(d.falta)? `<br><span class="sub">Falta: ${esc(d.falta)}</span>`:''}` : d.calidad ? '<span style="color:var(--good);font-weight:600">✔ concreta</span>' : '—'}</td></tr>`).join('')}</table>
+      <div class="sub" style="margin-top:6px">Concreta = dice qué se hace, quién y cuándo. Una decisión vaga se olvida o se interpreta distinto: ciérrala por escrito.</div>` : '<div class="aviso err">No se tomó ninguna decisión. Si la reunión era para decidir algo, eso ya es un hallazgo.</div>'}
   </div>
 
   <div class="card"><h3>📌 Compromisos</h3>
@@ -988,9 +1048,9 @@ async function mostrarInforme(id, ejemplo=null){
 
   <div class="card" style="border-left:4px solid var(--accent)"><h3>➡️ Siguiente paso recomendado</h3><p style="margin:0">${esc(ia.siguiente_paso||'—')}</p></div>
 
-  ${pant.filter(p=>!p.clave).length? `<div class="card"><h3>Otros pantallazos analizados</h3><div class="galeria">${pant.filter(p=>!p.clave).map(p=>fig(p)).join('')}</div></div>`:''}
+  ${pant.filter(p=>!p.clave && p.util!==false).length? `<div class="card"><h3>Otros pantallazos con información</h3><div class="galeria">${pant.filter(p=>!p.clave && p.util!==false).map(p=>fig(p)).join('')}</div></div>`:''}
 
-  ${caps.length > nombrados.size? `<div class="card no-export"><details><summary>Todos los pantallazos (${caps.length})</summary><div class="galeria" style="margin-top:10px">${caps.map(c=>`<figure><img src="${urls[c.n]}" data-n="${c.n}" loading="lazy" alt="Pantallazo ${c.n}"><figcaption>#${c.n} · ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ clave':c.tipo}${c.nota? ' · '+esc(c.nota):''}</figcaption></figure>`).join('')}</div></details></div>`:''}
+  ${caps.length > nombrados.size? `<div class="card no-export"><details><summary>Todos los pantallazos (${caps.length})</summary><div class="galeria" style="margin-top:10px">${caps.map(c=>`<figure><img src="${urls[c.n]}" data-n="${c.n}" loading="lazy" alt="Pantallazo ${c.n}"><figcaption>#${c.n} · ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ clave':c.tipo}${c.nota? ' · '+esc(c.nota):''}${porN[c.n]? '<br><b>'+esc(porN[c.n].titulo||'')+'</b>'+textoLeido(porN[c.n]) : '<br><span class="sub">(no se mandó a la IA)</span>'}</figcaption></figure>`).join('')}</div></details></div>`:''}
 
   <div class="card"><details><summary>Transcripción completa (${S_.segmentos.length} intervenciones)</summary>
     <div class="trans" style="margin-top:10px">${S_.segmentos.map(s=>`<p><span class="sub">${mmss(s.t)}</span> <span class="h" style="color:${s.fuente==='yo'?'var(--s-yo)':'var(--s-otros)'}">${esc(s.hablante)}:</span> ${esc(s.texto)}</p>`).join('') || '<div class="sub">Sin transcripción.</div>'}</div>
@@ -998,6 +1058,12 @@ async function mostrarInforme(id, ejemplo=null){
 
   <div class="sub" style="text-align:center">Generado ${esc(fechaTxt(S_.informe.generado||Date.now()))} con ${esc(S_.informe.modelo||'')} · Las notas y el resumen son interpretación de la IA; las métricas de tiempo y conteos son medidos.${S_.informe.fallidos? ` · ⚠ ${S_.informe.fallidos} bloque(s) de audio no se pudieron transcribir.`:''}</div>`;
   $('informe').innerHTML = h;
+  if($('btnRecalificar')) $('btnRecalificar').onclick = async ()=>{
+    if(!confirm('¿Guardar el objetivo y los criterios y pedirle a la IA que vuelva a calificar la reunión?')) return;
+    const s = await dbGet('sesiones', id);
+    s.objetivo = $('edObjetivo').value.trim(); s.criterios = leerCriterios($('edCriterios').value);
+    await dbPut('sesiones', s); S = s; leerCfg(); generarInforme(id);
+  };
   $('informe').dataset.sesion = ejemplo ? '' : id;
   $('btnRegenerar').classList.toggle('hide', !!ejemplo);
   vista('vInforme');
@@ -1099,20 +1165,21 @@ const EJEMPLO = (()=>{
   const ia = {
     titulo:'Propuesta de V2GO: tarifas y cobertura', resumen:'V2GO presentó su servicio, tarifas por kilo y cobertura. Confirmaron que Putumayo se cobra como trayecto especial ($18.200/kg + 1,5 % de seguro) con 3–5 días de entrega. Se acordó recibir la propuesta por escrito y evaluar un piloto, pero no se definió fecha ni volumen del piloto.',
     objetivo_detectado:'Conocer tarifas y cobertura de V2GO, sobre todo hacia Putumayo.', objetivo_cumplido:'parcial',
+    checklist:[{criterio:'Precio por kilo a Putumayo',estado:'✓',evidencia:'Trayecto especial: $18.200/kg + 1,5 % de seguro.',minuto:'08:40'},{criterio:'Días de entrega a Mocoa',estado:'✓',evidencia:'Entre 3 y 4 días; Puerto Asís 5.',minuto:'13:20'},{criterio:'Fecha de inicio del piloto',estado:'½',evidencia:'Se habló del piloto pero sin fecha ni volumen.',minuto:'28:20'}],
     puntajes:[{criterio:'Objetivo cumplido',nota:4,evidencia:'Se obtuvo tarifa y tiempos a Putumayo (13:00).'},{criterio:'Decisiones tomadas',nota:3,evidencia:'Se decidió pedir propuesta escrita; el piloto quedó sin definir.'},{criterio:'Compromisos claros (quién y cuándo)',nota:2,evidencia:'Carolina envía la propuesta, pero sin fecha.'},{criterio:'Claridad de la información',nota:4,evidencia:'Láminas con cifras concretas.'},{criterio:'Uso del tiempo',nota:4,evidencia:'32 min sin desvíos.'},{criterio:'Valor para mí',nota:4,evidencia:'Da la cifra para comparar contra Coordinadora.'}],
     razon_veredicto:'Se consiguió la información clave para comparar, pero los compromisos quedaron sin fecha y el piloto sin condiciones.',
     temas:[{minuto:'01:35',tema:'Presentación del servicio',resumen:'Cobertura de 1.100 municipios y recaudo incluido.',importancia:2},{minuto:'06:50',tema:'Tarifas',resumen:'Local $7.900, nacional $11.500, especiales $18.200 + 1,5 %.',importancia:3},{minuto:'13:00',tema:'Cobertura Putumayo',resumen:'Mocoa 3–4 días, Puerto Asís 5 días; sin rural.',importancia:3},{minuto:'25:00',tema:'Indicadores',resumen:'94 % a tiempo, 3,2 % novedades.',importancia:2}],
-    decisiones:[{minuto:'28:20',decision:'Pedir la propuesta formal por escrito antes de decidir',quien:'Jhojan'},{minuto:'28:20',decision:'Evaluar un piloto con V2GO',quien:null}],
+    decisiones:[{minuto:'28:20',decision:'Pedir la propuesta formal por escrito antes de decidir',quien:'Jhojan',calidad:'concreta',falta:null},{minuto:'28:20',decision:'Evaluar un piloto con V2GO',quien:null,calidad:'vaga',falta:'quién lo organiza, cuándo empieza y con cuántos envíos'}],
     compromisos:[{minuto:'29:20',tarea:'Enviar propuesta formal con tarifas',responsable:'Carolina (V2GO)',fecha:null},{minuto:'28:20',tarea:'Definir volumen y duración del piloto',responsable:null,fecha:null}],
     cifras:[{minuto:'06:50',dato:'Tarifa nacional por kg',valor:'$11.500',fuente:'pantallazo #2'},{minuto:'06:50',dato:'Tarifa trayecto especial por kg',valor:'$18.200 + 1,5 % seguro',fuente:'dicho'},{minuto:'13:20',dato:'Tiempo a Mocoa',valor:'3–4 días',fuente:'pantallazo #3'},{minuto:'25:20',dato:'Entregas a tiempo',valor:'94 %',fuente:'pantallazo #4'}],
     lo_que_dije:['Pregunté si Putumayo tiene tarifa propia','Pregunté tiempos a Mocoa','Propuse un piloto y pedir propuesta escrita'],
     lo_que_dijeron:[{quien:'Carolina (V2GO)',punto:'Tarifas y cumplimiento del 94 %'},{quien:'Andrés (V2GO)',punto:'Putumayo es trayecto especial, 3–5 días'}],
     riesgos:['El 94 % de cumplimiento es dato de ellos, sin soporte.','Sin cobertura rural en Putumayo.'],
     preguntas_abiertas:['¿Cuál es el costo de recaudo contra entrega?','¿Quién recoge en bodega y a qué hora?'],
-    pantallazos:[{n:2,titulo:'Tarifas por kilo',que_muestra:'Tabla de tarifas local, nacional y especial',por_que_importa:'Es la cifra para comparar con Coordinadora',clave:true},{n:3,titulo:'Cobertura sur',que_muestra:'Tiempos a Mocoa y Puerto Asís',por_que_importa:'Responde la duda principal de Putumayo',clave:true},{n:4,titulo:'Indicadores',que_muestra:'Cumplimiento y novedades',por_que_importa:'Hay que pedir soporte de estos datos',clave:false}],
+    pantallazos:[{n:1,titulo:'Propuesta de servicio',que_muestra:'Portada con alcance del servicio',texto:'Cobertura nacional: 1.100 municipios · Entrega en 24–72 h en ciudades principales · Recaudo contra entrega incluido',por_que_importa:'Dice que el recaudo está incluido, pero no su costo',util:true,clave:false},{n:2,titulo:'Tarifas por kilo',que_muestra:'Tabla de tarifas local, nacional y especial',texto:'Local: $7.900 · Nacional: $11.500 · Trayectos especiales: $18.200 + 1,5 % seguro',por_que_importa:'Es la cifra para comparar con Coordinadora',util:true,clave:true},{n:3,titulo:'Cobertura sur',que_muestra:'Tiempos a Mocoa y Puerto Asís',texto:'Mocoa: 3–4 días · Puerto Asís: 5 días (vía terrestre) · Sin cobertura en zonas rurales',por_que_importa:'Responde la duda principal de Putumayo',util:true,clave:true},{n:4,titulo:'Indicadores',que_muestra:'Cumplimiento y novedades',texto:'Entregas a tiempo: 94 % · Novedades: 3,2 % · Tiempo de respuesta PQR: 48 h',por_que_importa:'Hay que pedir soporte de estos datos',util:true,clave:false}],
     siguiente_paso:'Escribirle hoy a Carolina pidiendo la propuesta con fecha límite (viernes) e incluir el costo del recaudo.'
   };
-  const S = { id:'', creada: Date.now()-3600e3, titulo:'Reunión V2GO', objetivo:'Saber si V2GO cubre Putumayo, a qué precio y en cuánto tiempo', nombre:'Jhojan', motivoFin:'Se dejó de compartir la pantalla', segmentos:segs, duracion:1890, marcas:[{t:780,nota:'cobertura Putumayo'}] };
+  const S = { id:'', creada: Date.now()-3600e3, titulo:'Reunión V2GO', objetivo:'Decidir si hacemos un piloto con V2GO para envíos a Putumayo', criterios:['Precio por kilo a Putumayo','Días de entrega a Mocoa','Fecha de inicio del piloto'], nombre:'Jhojan', motivoFin:'Se dejó de compartir la pantalla', segmentos:segs, duracion:1890, marcas:[{t:780,nota:'cobertura Putumayo'}] };
   S.informe = { ia, met:{ duracion:1890, vozYo:0, vozOtros:0, pctYo:0, palabras:{}, totalPalabras:0, capturas:4, marcas:1, actividad:act, capT:caps.map(c=>({t:c.t,tipo:c.tipo})) }, generado: Date.now(), modelo:'ejemplo' };
   const m = S.informe.met; m.vozYo = act.reduce((a,x)=>a+x.yo,0); m.vozOtros = act.reduce((a,x)=>a+x.otros,0); m.pctYo = Math.round(m.vozYo/(m.vozYo+m.vozOtros)*100);
   m.palabras = {'Jhojan':1240,'Carolina (V2GO)':2610,'Andrés (V2GO)':980}; m.totalPalabras = 4830;
