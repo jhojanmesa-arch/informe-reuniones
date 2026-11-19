@@ -170,10 +170,10 @@ ul.lista li{margin-bottom:4px}
         <div class="grid2">
           <div><label>Tu nombre (como aparecerá en el informe)</label><input id="cfNombre" placeholder="Jhojan"></div>
           <div></div>
-          <div><label>Llave de Gemini (transcribe el audio) — aistudio.google.com/apikey · empieza por <b>AIza</b></label>
+          <div><label>Llave de Gemini (<b>obligatoria</b>: transcribe y, si no hay Claude, arma el informe) — aistudio.google.com/apikey · empieza por <b>AIza</b></label>
             <div class="row" style="flex-wrap:nowrap"><input id="cfGemini" class="secreto" type="text" autocomplete="off" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="AIza…"><button type="button" class="ojo" data-para="cfGemini" title="Mostrar / ocultar">👁</button></div></div>
           <div><label>Modelo de Gemini</label><input id="cfGeminiModel"></div>
-          <div><label>Llave de Claude (arma el informe) — platform.claude.com · empieza por <b>sk-ant-</b></label>
+          <div><label>Llave de Claude (<b>opcional</b>: si la pones, Claude arma el informe en vez de Gemini) — platform.claude.com · empieza por <b>sk-ant-</b></label>
             <div class="row" style="flex-wrap:nowrap"><input id="cfClaude" class="secreto" type="text" autocomplete="off" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="sk-ant-…"><button type="button" class="ojo" data-para="cfClaude" title="Mostrar / ocultar">👁</button></div></div>
           <div><label>Modelo de Claude</label>
             <select id="cfClaudeModel">
@@ -266,7 +266,7 @@ ul.lista li{margin-bottom:4px}
    Todo se guarda en IndexedDB de este navegador (recuperable).
    ===================================================================== */
 
-const VERSION = '1.1';
+const VERSION = '1.2';
 const UMBRAL_VOZ = 0.012;        // RMS a partir del cual cuenta como voz
 const MUESTREO_MS = 2000;        // cada cuánto mira la pantalla
 const UMBRAL_CAMBIO = 10;        // diferencia media (0-255) para "pantalla nueva"
@@ -322,8 +322,7 @@ function revisarLlaves(){
   if(!g) p.push('Falta la llave de <b>Gemini</b>.');
   else if(!/^AIza[0-9A-Za-z_-]{35}$/.test(g)) p.push(`La llave de <b>Gemini</b> no tiene el formato correcto: debe empezar por <b>AIza</b> y tener 39 caracteres. La que pegaste empieza por <b>${esc(g.slice(0,4))}</b> y tiene ${g.length}.`
     + (g.length>8 && g.length<20 ? ' Parece una contraseña que Chrome llenó solo, no una llave.' : ''));
-  if(!c) p.push('Falta la llave de <b>Claude</b>.');
-  else if(!/^sk-ant-(?!sid)[0-9A-Za-z_-]{20,}$/.test(c)) p.push(`La llave de <b>Claude</b> no tiene el formato correcto: debe empezar por <b>sk-ant-</b>. La que pegaste empieza por <b>${esc(c.slice(0,4))}</b> y tiene ${c.length} caracteres.`
+  if(c &&!/^sk-ant-(?!sid)[0-9A-Za-z_-]{20,}$/.test(c)) p.push(`La llave de <b>Claude</b> no tiene el formato correcto: debe empezar por <b>sk-ant-</b>. La que pegaste empieza por <b>${esc(c.slice(0,4))}</b> y tiene ${c.length} caracteres.`
     + (c.startsWith('sk-ant-sid') ? ' Eso es una cookie de claude.ai, no una llave de API.' : c.length<20 ? ' Parece una contraseña que Chrome llenó solo, no una llave.' : ''));
   return p;
 }
@@ -336,7 +335,8 @@ function leerCfg(){
   try{ localStorage.setItem('ir_config', JSON.stringify(CFG)); }catch(e){}
 }
 pintarCfg();
-if(!CFG.geminiKey || !CFG.claudeKey) $('detConfig').open = true;
+if(!CFG.geminiKey) $('detConfig').open = true;
+const motorInforme = ()=> CFG.claudeKey ? CFG.claudeModel : CFG.geminiModel;
 $('btnGuardarCfg').onclick = ()=>{ leerCfg(); msg('msgCfg','Guardado ✔','ok'); };
 $('btnProbar').onclick = async ()=>{
   leerCfg();
@@ -351,10 +351,11 @@ $('btnProbar').onclick = async ()=>{
       : res.status===404 ? '✖ Gemini: la llave sirve, pero el modelo "'+esc(CFG.geminiModel)+'" no existe. Prueba con gemini-2.5-flash o el que muestre AI Studio.'
       : '✖ Gemini: '+esc(String(t).slice(0,200)) + (/API key not valid/i.test(t)? ' → La llave está bien escrita pero Google no la reconoce: créala de nuevo en aistudio.google.com/apikey.' : ''));
   }catch(e){ r.push('✖ Gemini: '+esc(e.message)); }
-  try{
+  if(!CFG.claudeKey) r.push('— Claude: sin llave (no hace falta). El informe lo arma <b>Gemini</b>.');
+  else try{
     await llamarClaude([{role:'user',content:'Responde solo: ok'}], {maxTokens:64});
-    r.push('✔ Claude responde (modelo '+esc(CFG.claudeModel)+')');
-  }catch(e){ r.push('✖ Claude: '+esc(e.message)); }
+    r.push('✔ Claude responde (modelo '+esc(CFG.claudeModel)+'). El informe lo arma <b>Claude</b>.');
+  }catch(e){ r.push('✖ Claude: '+esc(e.message)+' — Si no la vas a usar, borra ese campo y el informe lo hará Gemini.'); }
   msg('msgCfg', r.join('<br>'), r.some(x=>x.startsWith('✖'))?'err':'ok');
 };
 
@@ -677,7 +678,7 @@ async function generarInforme(id, soloRehacerIA=false){
     const ia = await analizar(S, met, elegidas);
     // 5. armar
     pasos(4);
-    S.informe = { ia, met, elegidas: elegidas.map(c=>c.id), generado: Date.now(), modelo: CFG.claudeModel, fallidos: fallidos.length };
+    S.informe = { ia, met, elegidas: elegidas.map(c=>c.id), generado: Date.now(), modelo: motorInforme(), fallidos: fallidos.length };
     S.estado = 'listo'; await guardarSesion();
     await mostrarInforme(S.id);
   }catch(e){
@@ -769,8 +770,31 @@ PANTALLAZOS (vienen abajo, cada uno con su número y minuto):` }];
     content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data: await achicar(c.blob) } });
   }
   content.push({ type:'text', text:`Devuelve el informe con EXACTAMENTE esta estructura JSON:\n${esquema}\nEn "pantallazos" incluye solo los que tengan contenido útil (presentaciones, tablas, documentos) y marca "clave": true en máximo 8.` });
-  const txt = await llamarClaude([{role:'user', content}], { system, maxTokens:16000, effort:'high', progreso:n=>pasos(3, `Escribiendo el informe… ${n.toLocaleString('es-CO')} caracteres`, 50+Math.min(40, n/250)) });
+  const txt = CFG.claudeKey
+    ? await llamarClaude([{role:'user', content}], { system, maxTokens:16000, effort:'high', progreso:n=>pasos(3, `Escribiendo el informe… ${n.toLocaleString('es-CO')} caracteres`, 50+Math.min(40, n/250)) })
+    : await informeConGemini(system, content);
   return jsonSeguro(txt);
+}
+
+// Mismo contenido (texto + imágenes) en el formato de Gemini
+async function informeConGemini(system, content){
+  const parts = content.map(b => b.type==='image'
+    ? { inline_data:{ mime_type: b.source.media_type, data: b.source.data } }
+    : { text: b.text });
+  const body = { systemInstruction:{ parts:[{text:system}] }, contents:[{ role:'user', parts }],
+    generationConfig:{ responseMimeType:'application/json', temperature:0.2, maxOutputTokens:32768 } };
+  pasos(3, 'Gemini está escribiendo el informe… (1 a 3 minutos)', 60);
+  for(let intento=1; ; intento++){
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CFG.geminiModel)}:generateContent`,
+      { method:'POST', headers:{'Content-Type':'application/json','x-goog-api-key':CFG.geminiKey}, body: JSON.stringify(body) });
+    if((res.status===429 || res.status>=500) && intento<=3){ pasos(3, `Gemini ocupado, reintento ${intento} de 3…`, 60); await dormir(intento*20000); continue; }
+    if(!res.ok){ let t = await res.text(); try{ t = JSON.parse(t).error?.message || t; }catch(e){} throw new Error('Gemini '+res.status+': '+String(t).slice(0,300)); }
+    const j = await res.json();
+    const cand = j.candidates?.[0];
+    if(!cand) throw new Error('Gemini no devolvió informe'+(j.promptFeedback?.blockReason? ' (bloqueado: '+j.promptFeedback.blockReason+')':''));
+    if(cand.finishReason==='MAX_TOKENS') throw new Error('El informe salió demasiado largo y se cortó. Intenta “Regenerar”.');
+    return (cand.content?.parts||[]).map(p=>p.text||'').join('');
+  }
 }
 
 async function llamarClaude(messages, {system, maxTokens=4000, effort, progreso}={}){
@@ -981,7 +1005,7 @@ async function mostrarInforme(id, ejemplo=null){
 /* ---- acciones del informe ---- */
 $('btnVolver').onclick = ()=>irInicio();
 $('btnImprimir').onclick = ()=>window.print();
-$('btnRegenerar').onclick = ()=>{ const id=$('informe').dataset.sesion; if(id && confirm('¿Volver a pedirle el análisis a Claude? (tiene costo, ~US$0,30)')) generarInforme(id); };
+$('btnRegenerar').onclick = ()=>{ const id=$('informe').dataset.sesion; if(id && confirm('¿Volver a pedir el análisis a la IA ('+motorInforme()+')? Si es de pago, vuelve a cobrar.')) generarInforme(id); };
 $('btnCopiar').onclick = async ()=>{
   const id = $('informe').dataset.sesion; const S_ = id ? await dbGet('sesiones', id) : EJEMPLO.S; const ia = S_.informe.ia; const V = veredicto(ia.puntajes);
   const t = [`*${ia.titulo||S_.titulo}* (${fechaTxt(S_.creada)})`, `Resultado: ${V.v} (${V.total}/100)`, '', ia.resumen, '',
