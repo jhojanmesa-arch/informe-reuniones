@@ -304,6 +304,79 @@ ul.lista li b{color:var(--text)}
 .leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .siguiente{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
 .siguiente p{font-size:15px;font-weight:500}
+/* secciones desplegables del informe */
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;box-shadow:var(--sh-1);overflow:hidden;scroll-margin-top:76px}
+.sec>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;transition:background .15s}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary:hover{background:var(--surface-2)}
+.sec-ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sec-ic svg{width:17px;height:17px}
+.sec-t{font-weight:700;font-size:15px;color:var(--text)}
+.sec-r{margin-left:auto;font-size:13px;color:var(--text-2);text-align:right}
+.sec-ch{color:var(--muted);display:inline-flex;transition:transform .2s;flex:none}
+.sec[open]>summary .sec-ch{transform:rotate(180deg)}
+.sec[open]>summary{border-bottom:1px solid var(--line)}
+.sec-b{padding:18px}
+@media (max-width:600px){.sec>summary{flex-wrap:wrap}.sec-r{order:3;width:100%;margin-left:46px;text-align:left}.sec-ch{margin-left:auto}}
+.sec-tools{display:flex;justify-content:flex-end;gap:4px;margin:-4px 0 8px}
+.sec-tools button{padding:7px 10px;font-size:13px}
+.sec-tools svg{width:15px;height:15px}
+.ir-a{font-weight:600;text-decoration:none;white-space:nowrap}
+.ir-a:hover{text-decoration:underline}
+.sub-t{font-size:13px;font-weight:700;color:var(--text);margin:0 0 8px}
+.tag-clave{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;padding:2px 6px;border-radius:5px;background:var(--danger-soft);color:var(--danger);vertical-align:1px}
+.sig-paso{display:flex;gap:10px;align-items:flex-start;margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);color:var(--text)}
+.sig-paso svg{color:var(--accent);margin-top:2px}
+.sig-paso b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+.sig-paso span{font-size:14.5px;font-weight:500}
+.gauge .badge{font-size:12px}
+ol.puntos{margin:0;padding-left:22px;display:grid;gap:8px}
+ol.puntos li{padding-left:4px;line-height:1.55}
+ol.puntos li::marker{color:var(--accent);font-weight:800}
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.ex-grid{grid-template-columns:1fr}}
+.ex-item{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+.ex-item>span{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px}
+.ex-item p{font-size:14px}
+.mz-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.mz-res>div{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+.mz-v{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.mz-v small{font-size:14px;color:var(--muted);font-weight:600}
+.mz-l{font-size:12px;color:var(--muted)}
+.cats{display:grid;gap:9px;margin-bottom:16px}
+.cat-fila{display:grid;grid-template-columns:minmax(150px,230px) 1fr 110px;gap:12px;align-items:center;font-size:13.5px}
+.cat-n{font-weight:600}.cat-n small{color:var(--muted);font-weight:500}
+.cat-barra{height:10px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.cat-barra>div{height:100%;border-radius:99px}
+.cat-v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.cat-v small{color:var(--muted);font-weight:500}
+@media (max-width:600px){.cat-fila{grid-template-columns:1fr 80px}.cat-barra{grid-column:1/-1;order:3}}
+.crit-lista{display:grid;gap:10px;margin-bottom:12px}
+.crit{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.crit-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.crit-n{font-size:20px;font-weight:800}.crit-n small{font-size:13px;color:var(--muted);font-weight:600}
+.crit-barra{height:7px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin:6px 0 8px}
+.crit-barra>div{height:100%;background:var(--accent);border-radius:99px}
+.crit-q{font-size:12.5px;color:var(--muted);margin-bottom:4px}
+.crit-e{font-size:13.5px;color:var(--text-2)}
+/* tipo de reunión */
+.tipos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:700px){.tipos{grid-template-columns:1fr}}
+.tipo{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;white-space:normal;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);line-height:1.35}
+.tipo svg{width:19px;height:19px;color:var(--muted);margin-bottom:4px}
+.tipo b{font-size:14px}
+.tipo span{font-size:12.5px;color:var(--muted);font-weight:500}
+.tipo.act{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.tipo.act svg{color:var(--accent)}
+.plantilla-row{display:flex;gap:8px}
+.plantilla-row select{flex:1}
+/* preguntas durante la grabación */
+.preg-rec{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.preg-rec>summary{padding:12px 14px;font-weight:700;color:var(--text)}
+.preg-rec .pr-b{padding:0 14px 12px;max-height:320px;overflow:auto}
+.pr-cat{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:10px 0 6px}
+.pr-q{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:5px 0;cursor:pointer;font-weight:500;color:var(--text);margin:0}
+.pr-q input{width:16px;height:16px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.pr-q input:checked+span{color:var(--muted);text-decoration:line-through}
 #tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px;box-shadow:var(--sh-3);z-index:60;max-width:280px;display:none}
 #lightbox{position:fixed;inset:0;background:rgba(5,8,16,.88);display:none;align-items:center;justify-content:center;z-index:70;padding:16px;cursor:zoom-out}
 #lightbox img{max-width:100%;max-height:100%;border-radius:8px}
@@ -352,8 +425,21 @@ ul.lista li b{color:var(--text)}
       <div>
         <div class="card">
           <div class="card-h"><span class="card-ic" data-ic="file"></span><div><h2>Nueva reunión</h2><p class="card-sub">Mientras más claro el objetivo, mejor la calificación.</p></div></div>
+          <div class="campo"><label>Tipo de reunión</label>
+            <div class="tipos" id="tipos">
+              <button type="button" class="tipo act" data-tipo="evaluar"><i data-ic="checkCircle"></i><b>Evaluar un proveedor</b><span>Transportadora, plataforma o servicio. Con calificación y matriz.</span></button>
+              <button type="button" class="tipo" data-tipo="interna"><i data-ic="users"></i><b>Con mi líder o equipo</b><span>Qué se habló, acuerdos y tareas. Sin calificación.</span></button>
+              <button type="button" class="tipo" data-tipo="informativa"><i data-ic="message"></i><b>Presentación o capacitación</b><span>Quién presentó y los datos clave. Sin calificación.</span></button>
+            </div></div>
+          <div class="grid2" id="bloqueEmpresa">
+            <div class="campo"><label for="inEmpresa">Empresa o persona que presenta <span class="opc">· opcional</span></label><input id="inEmpresa" placeholder="Ej: Skydropx"></div>
+            <div class="campo" id="bloqueMatriz"><label for="selPlantilla"><i data-ic="tasks"></i> Matriz de preguntas <span class="opc">· opcional</span></label>
+              <div class="plantilla-row"><select id="selPlantilla"></select><button type="button" class="btn-icon" id="btnImportar" title="Importar matriz desde Excel" data-ic="upload"></button><button type="button" class="btn-icon btn-ghost hide" id="btnBorrarPlantilla" title="Quitar esta matriz" data-ic="trash"></button></div>
+              <input type="file" id="fileMatriz" accept=".xlsx,.xls" class="hide">
+              <p class="ayuda" id="infoPlantilla"></p></div>
+          </div>
           <div class="grid2">
-            <div class="campo"><label for="inTitulo">Título</label><input id="inTitulo" placeholder="Ej: Propuesta tarifas V2GO"></div>
+            <div class="campo"><label for="inTitulo">Título</label><input id="inTitulo" placeholder="Ej: Presentación Skydropx"></div>
             <div class="campo"><label for="inPart">Participantes <span class="opc">· opcional</span></label><input id="inPart" placeholder="Ej: Alejandro, asesor V2GO"></div>
           </div>
           <div class="campo"><label for="inObjetivo"><i data-ic="target"></i> Objetivo <span class="opc">· ¿para qué es la reunión?</span></label>
@@ -421,6 +507,7 @@ ul.lista li b{color:var(--text)}
           <video id="vid" muted playsinline class="hide"></video>
         </div>
       </div>
+      <details class="preg-rec hide" id="pregRec" open><summary></summary><div class="pr-b" id="pregRecLista"></div></details>
       <p class="ayuda centro" style="margin-top:20px">Se apaga sola al dejar de compartir, al cerrar la reunión o tras <span id="txtSil"></span> min de silencio total. Puedes minimizar esta pestaña, pero no la cierres.</p>
     </div>
   </section>
@@ -511,7 +598,7 @@ ul.lista li b{color:var(--text)}
    Todo se guarda en IndexedDB de este navegador (recuperable).
    ===================================================================== */
 
-const VERSION = '1.5';
+const VERSION = '1.6';
 const UMBRAL_VOZ = 0.012;        // RMS a partir del cual cuenta como voz
 const MUESTREO_MS = 2000;        // cada cuánto mira la pantalla
 const UMBRAL_CAMBIO = 10;        // diferencia media de una zona (0-255) para "esta zona cambió"
@@ -570,6 +657,8 @@ const IC = {
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   sparkles:'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
   chart:'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  chevron:'<path d="m6 9 6 6 6-6"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
   calendar:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]||''}</svg>`;
@@ -719,8 +808,88 @@ let S = null;          // sesión actual (se guarda completa en IndexedDB)
 let G = null;          // recursos en vivo (streams, audio, timers)
 
 const leerCriterios = txt => String(txt||'').split('\n').map(l=>l.replace(/^[\s\-•*\d.)]+/,'').trim()).filter(Boolean).slice(0,10);
+/* ---------------- tipo de reunión y matrices (plantillas) ---------------- */
+// Las matrices se importan de Excel y se guardan SOLO en este navegador (pueden tener tarifas y datos internos;
+// el repositorio de GitHub es público, por eso no van en el código).
+let TIPO = 'evaluar';
+try{ TIPO = localStorage.getItem('ir_tipo') || 'evaluar'; }catch(e){}
+const leerPlantillas = ()=>{ try{ return JSON.parse(localStorage.getItem('ir_plantillas')||'[]'); }catch(e){ return []; } };
+const guardarPlantillas = arr => { try{ localStorage.setItem('ir_plantillas', JSON.stringify(arr)); }catch(e){} };
+function pintarTipo(){
+  document.querySelectorAll('#tipos .tipo').forEach(b=>b.classList.toggle('act', b.dataset.tipo===TIPO));
+  $('bloqueEmpresa').classList.toggle('hide', TIPO==='interna');
+  $('bloqueMatriz').classList.toggle('hide', TIPO!=='evaluar');
+}
+function pintarPlantillas(sel){
+  const pls = leerPlantillas();
+  let actual = sel; if(actual==null){ try{ actual = localStorage.getItem('ir_plantilla_sel') || ''; }catch(e){ actual=''; } }
+  if(actual && !pls.some(p=>p.id===actual)) actual = '';
+  $('selPlantilla').innerHTML = `<option value="">Sin matriz</option>` + pls.map(p=>`<option value="${esc(p.id)}"${p.id===actual?' selected':''}>${esc(p.nombre)} · ${p.preguntas.length} preguntas</option>`).join('');
+  const p = pls.find(x=>x.id===actual);
+  $('btnBorrarPlantilla').classList.toggle('hide', !p);
+  $('infoPlantilla').innerHTML = p ? `${p.preguntas.filter(q=>q.clave).length} preguntas clave · ${Object.keys(p.pesos||{}).length} categorías con peso. Las verás durante la grabación y el informe las responde una por una.`
+    : pls.length ? 'Elige una matriz para que el informe la responda.' : 'Importa tu matriz de Excel (por ejemplo la de transportadoras) con el botón de subir.';
+  try{ localStorage.setItem('ir_plantilla_sel', actual); }catch(e){}
+}
+$('tipos').addEventListener('click', e=>{ const b=e.target.closest('.tipo'); if(!b) return; TIPO=b.dataset.tipo; try{ localStorage.setItem('ir_tipo',TIPO); }catch(e){} pintarTipo(); });
+$('selPlantilla').onchange = ()=>pintarPlantillas($('selPlantilla').value);
+$('btnBorrarPlantilla').onclick = ()=>{ const id=$('selPlantilla').value; if(id && confirm('¿Quitar esta matriz del navegador? (tu Excel no se toca)')){ guardarPlantillas(leerPlantillas().filter(p=>p.id!==id)); pintarPlantillas(''); } };
+$('btnImportar').onclick = ()=>$('fileMatriz').click();
+$('fileMatriz').onchange = async e=>{
+  const f = e.target.files[0]; e.target.value=''; if(!f) return;
+  try{
+    $('infoPlantilla').textContent = 'Leyendo el Excel…';
+    const p = await importarMatriz(f);
+    const pls = leerPlantillas().filter(x=>x.nombre!==p.nombre); pls.push(p); guardarPlantillas(pls); pintarPlantillas(p.id);
+    msg('msgInicio', `Matriz <b>${esc(p.nombre)}</b> importada: ${p.preguntas.length} preguntas en ${Object.keys(p.pesos).length} categorías. Quedó guardada solo en este navegador.`, 'ok');
+  }catch(err){ pintarPlantillas(); msg('msgInicio', 'No se pudo leer la matriz: '+esc(err.message), 'err'); }
+};
+function cargarScript(src){ return new Promise((ok,mal)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>mal(new Error('no cargó la librería de Excel')); document.head.appendChild(s); }); }
+// Lee una matriz con encabezados "#, Categoría, Pregunta, Lo que esperamos, Clave" (la fila puede estar en cualquier parte),
+// los pesos (nombre de categoría + número entre 0 y 1 en la misma fila) y el contexto de arriba ("Volumen: ...").
+async function importarMatriz(file){
+  if(!window.XLSX) await cargarScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+  const wb = XLSX.read(await file.arrayBuffer(), {type:'array'});
+  const hoja = wb.Sheets[wb.SheetNames[0]];
+  const filas = XLSX.utils.sheet_to_json(hoja, {header:1, defval:'', raw:true});
+  const n = v => String(v??'').normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase();
+  const hi = filas.findIndex(r=>r.some(c=>n(c)==='pregunta'));
+  if(hi<0) throw new Error('no encontré una columna llamada "Pregunta".');
+  const H = filas[hi].map(n);
+  const col = pred => H.findIndex(pred);
+  const cN = col(c=>c==='#'||c==='n'||c==='no'), cCat = col(c=>c.startsWith('categor')), cQ = col(c=>c==='pregunta'),
+        cE = col(c=>c.startsWith('lo que esp')||c.startsWith('esperado')), cK = col(c=>c==='clave');
+  const preguntas = [];
+  for(let i=hi+1;i<filas.length;i++){
+    const r = filas[i], q = String(r[cQ]??'').trim(); if(!q) break;
+    preguntas.push({ n: cN>=0 && r[cN]!=='' ? +r[cN] : preguntas.length+1, cat: cCat>=0 ? String(r[cCat]).trim()||'General' : 'General',
+      q, espera: cE>=0 ? String(r[cE]).trim() : '', clave: cK>=0 && /^s[ií]/i.test(String(r[cK]).trim()) });
+  }
+  if(!preguntas.length) throw new Error('la columna "Pregunta" está vacía.');
+  const cats = [...new Set(preguntas.map(p=>p.cat))], pesos = {};
+  for(const r of filas) r.forEach((c,j)=>{ const nom = cats.find(k=>n(k)===n(c)); if(!nom || j===cCat) return;
+    const num = r.slice(j+1).find(v=>typeof v==='number' && v>0 && v<=1); if(num!=null && pesos[nom]==null) pesos[nom]=num; });
+  for(const c of cats) if(pesos[c]==null) pesos[c] = 1/cats.length;
+  const contexto = filas.slice(1,hi).filter(r=>typeof r[0]==='string' && r[0].trim() && typeof r[2]==='string' && r[2].trim()).map(r=>`${r[0].trim()}: ${r[2].trim()}`);
+  const titulo = String(filas[0]?.[0]||'').trim();
+  return { id:'pl'+Date.now(), nombre: (titulo || file.name.replace(/\.xlsx?$/i,'')).replace(/^matriz de evaluaci[oó]n de /i,'').slice(0,60), preguntas, pesos, contexto };
+}
+pintarTipo(); pintarPlantillas();
+
+function pintarPreguntasRec(pl){
+  const box = $('pregRec');
+  if(!pl){ box.classList.add('hide'); return; }
+  box.classList.remove('hide');
+  box.querySelector('summary').innerHTML = `Preguntas por hacer · ${esc(pl.nombre)} (${pl.preguntas.length}) <span class="opc">· márcalas a medida que las hagas</span>`;
+  const cats = [...new Set(pl.preguntas.map(p=>p.cat))];
+  $('pregRecLista').innerHTML = cats.map(c=>`<div class="pr-cat">${esc(c)}</div>` + pl.preguntas.filter(p=>p.cat===c).map(p=>
+    `<label class="pr-q"><input type="checkbox"><span>${p.n}. ${esc(p.q)}${p.clave?' <span class="tag-clave">CLAVE</span>':''}</span></label>`).join('')).join('');
+}
+
 function nuevaSesion(){
-  return { id: 'r'+Date.now(), creada: Date.now(), titulo: $('inTitulo').value.trim() || 'Reunión '+new Date().toLocaleDateString('es-CO'),
+  const pl = TIPO==='evaluar' ? leerPlantillas().find(p=>p.id===$('selPlantilla').value) || null : null;
+  return { id: 'r'+Date.now(), creada: Date.now(), titulo: $('inTitulo').value.trim() || ($('inEmpresa').value.trim() ? 'Reunión con '+$('inEmpresa').value.trim() : 'Reunión '+new Date().toLocaleDateString('es-CO')),
+    tipo: TIPO, empresa: TIPO==='interna' ? '' : $('inEmpresa').value.trim(), plantilla: pl,
     objetivo: $('inObjetivo').value.trim(), criterios: leerCriterios($('inCriterios').value), participantes: $('inPart').value.trim(), nombre: CFG.nombre || 'Yo',
     estado:'grabando', duracion:0, actividad:[], segmentos:[], marcas:[], nCapturas:0, bloques:0, motivoFin:'', informe:null, version:VERSION };
 }
@@ -796,7 +965,8 @@ async function iniciar(){
   G.timers.push(setInterval(()=>cerrarBloque(false), CFG.bloqueMin*60000));
   G.timers.push(setInterval(()=>{ S.duracion = segundosGrabados(); guardarSesion(); }, 15000));
 
-  $('recTitulo').textContent = '· '+S.titulo + (S.objetivo? ' · 🎯 '+S.objetivo : '') + (S.criterios.length? ' · ✅ '+S.criterios.join(' / ') : ''); $('txtSil').textContent = CFG.silencioMin; $('nCapturas').textContent='0'; $('ultimaCaptura').removeAttribute('src');
+  $('recTitulo').textContent = S.titulo + (S.objetivo? ' · Objetivo: '+S.objetivo : '') + (S.criterios.length? ' · Criterios: '+S.criterios.join(' / ') : '');
+  pintarPreguntasRec(S.plantilla); $('txtSil').textContent = CFG.silencioMin; $('nCapturas').textContent='0'; $('ultimaCaptura').removeAttribute('src');
   window.addEventListener('beforeunload', avisoSalir);
   vista('vGrabando');
   setTimeout(()=>tomarCaptura('auto', 0), 1500); // primer pantallazo
@@ -1068,7 +1238,13 @@ async function analizar(S, met, caps){
     ? S.segmentos.map(s=>`[${mmss(s.t)}] ${s.hablante}${s.fuente==='yo'?' (YO)':''}: ${s.texto}`).join('\n')
     : '(No hay transcripción: no se grabó voz o falló la transcripción.)';
   const marcas = (S.marcas||[]).map(m=>`- ${mmss(m.t)}${m.nota? ': '+m.nota : ''}`).join('\n') || '(ninguno)';
-  const system = `Eres un analista de reuniones de trabajo riguroso y honesto. Escribes en español de Colombia, claro y directo. Tu informe le sirve a ${S.nombre} para decidir si la reunión sirvió y qué hacer después.
+  const tipo = S.tipo || 'evaluar', evalua = tipo==='evaluar', pl = evalua ? S.plantilla : null;
+  const propositoTipo = {
+    evaluar: `Es una reunión para EVALUAR a un proveedor${S.empresa? ' ('+S.empresa+')':''}. El informe le sirve a ${S.nombre} para saber qué ofrece, si cumple lo que la empresa necesita y qué hacer después.`,
+    interna: `Es una reunión INTERNA (con su líder o su equipo). No hay que calificarla: el informe le sirve a ${S.nombre} para tener claro y por escrito qué se habló, qué se acordó, qué le toca hacer y qué quedó pendiente.`,
+    informativa: `Es una PRESENTACIÓN o capacitación${S.empresa? ' de '+S.empresa:''}. No hay que calificarla: el informe le sirve a ${S.nombre} para entender qué presentaron, quién es el expositor y los datos clave.`
+  }[tipo];
+  const system = `Eres un analista de reuniones de trabajo riguroso y honesto. Escribes en español de Colombia, claro y directo. ${propositoTipo}
 Reglas:
 - Usa SOLO lo que está en la transcripción y en los pantallazos. Si algo no se dijo, pon null o déjalo vacío: nunca inventes nombres, fechas ni cifras.
 - Las líneas "(YO)" son de ${S.nombre}. Las demás son de los otros participantes.
@@ -1078,11 +1254,14 @@ Reglas:
   const esquema = `{
  "titulo": "título corto y claro de la reunión",
  "resumen": "resumen ejecutivo de 3 a 5 frases",
+ "puntos_clave": ["de 5 a 10 puntos con lo más importante que se habló, cada uno una frase completa y concreta"],
+ "expositor": ${tipo==='interna' ? 'null' : `{"nombre":"empresa o persona que presentó","que_es":"qué es, en 1-2 frases","para_quien":"a quién le sirve","como_funciona":"cómo funciona su servicio o modelo","objetivo":"qué buscan con nosotros","que_ofrece":["servicios u ofertas concretas"],"diferenciales":["lo que dicen que los hace distintos"],"datos_clave":["cifras, clientes, cobertura, años, etc. dichos o mostrados"]} o null si nadie presentó`},
  "objetivo_detectado": "para qué era la reunión según lo hablado",
  "objetivo_cumplido": "sí | parcial | no",
  "checklist": [{"criterio":"...","estado":"✓ | ½ | ✗","evidencia":"qué se dijo o mostró, o qué faltó","minuto":"MM:SS o null"}],
- "puntajes": [${CRITERIOS.map(c=>`{"criterio":"${c}","nota":1-5,"evidencia":"..."}`).join(',')}],
- "razon_veredicto": "por qué sirvió o no, en 2 frases",
+${evalua ? ` "puntajes": [${CRITERIOS.map(c=>`{"criterio":"${c}","nota":1-5,"evidencia":"..."}`).join(',')}],
+ "razon_veredicto": "por qué sirvió o no, en 2 frases",` : ''}
+${pl ? ` "matriz": [{"n": número de la pregunta,"estado":"✓ | ½ | ✗ | vacío","respuesta":"lo que respondieron, con cifras si las dieron","minuto":"MM:SS o null"}],` : ''}
  "temas": [{"minuto":"MM:SS","tema":"...","resumen":"...","importancia":1-3}],
  "decisiones": [{"minuto":"MM:SS","decision":"...","quien":"... o null","calidad":"concreta | vaga","falta":"qué le falta para ser concreta (quién, qué exactamente, cuándo, cuánto) o null"}],
  "compromisos": [{"minuto":"MM:SS","tarea":"...","responsable":"... o null","fecha":"... o null"}],
@@ -1100,7 +1279,10 @@ Fecha: ${fechaTxt(S.creada)} · Duración: ${durTxt(met.duracion)}
 Objetivo que ${S.nombre} escribió antes: ${S.objetivo || '(no lo escribió: dedúcelo de lo hablado)'}
 Criterios de éxito que ${S.nombre} escribió: ${(S.criterios||[]).length ? '\n'+S.criterios.map((c,i)=>`  ${i+1}. ${c}`).join('\n') : '(no escribió: propón tú 3 criterios razonables según el objetivo y evalúalos)'}
 Participantes esperados: ${S.participantes || '(no indicados)'}
-
+${S.empresa? `Empresa o persona que presenta: ${S.empresa}\n` : ''}${pl ? `
+MATRIZ DE EVALUACIÓN "${pl.nombre}" (respóndela pregunta por pregunta en "matriz"):
+${pl.contexto && pl.contexto.length ? 'Lo que necesita nuestra empresa:\n'+pl.contexto.map(c=>'- '+c).join('\n')+'\n' : ''}${pl.preguntas.map(p=>`${p.n}. [${p.cat}]${p.clave?' [CLAVE]':''} ${p.q} — Esperamos: ${p.espera||'—'}`).join('\n')}
+` : ''}
 MÉTRICAS MEDIDAS (son datos reales, úsalas tal cual):
 - Tiempo hablando ${S.nombre}: ${mmss(met.vozYo)} · otros: ${mmss(met.vozOtros)} · ${S.nombre} habló el ${met.pctYo}% del tiempo con voz
 - Palabras por hablante: ${JSON.stringify(met.palabras)}
@@ -1120,6 +1302,9 @@ PANTALLAZOS (vienen abajo, cada uno con su número y minuto):` }];
   content.push({ type:'text', text:`Devuelve el informe con EXACTAMENTE esta estructura JSON:\n${esquema}
 - "checklist": un elemento por cada criterio de éxito, en el mismo orden. ✓ = se consiguió completo, ½ = a medias o sin precisión, ✗ = no se consiguió.
 - "objetivo_cumplido" debe ser coherente con el checklist.
+- "puntos_clave": lo que ${S.nombre} necesita recordar de la reunión, sin relleno ni frases genéricas.
+- "expositor": solo con lo que se dijo o se mostró; lo que no se dijo va vacío. No completes con lo que sabes de esa empresa por fuera de la reunión.${pl ? `
+- "matriz": un elemento por CADA pregunta de la matriz, en orden. ✓ = la respuesta cumple lo que esperamos · ½ = cumple a medias o sin precisión · ✗ = no cumple · "" (vacío) = no se habló de eso en la reunión. Sé estricto: si no lo dijeron o no lo mostraron, va vacío, aunque sea probable. En "respuesta" pon lo que dijeron (o vacío).` : ''}
 - "decisiones": una decisión es "concreta" solo si dice qué se hace, quién lo hace y cuándo (o cuánto). Si falta algo es "vaga" y en "falta" dices qué le falta.
 - "pantallazos": incluye TODOS los pantallazos que te mandé, uno por número. "util": false si solo muestra caras, escritorio vacío o nada legible (en ese caso "texto" vacío). En "texto" copia lo que se lee, no lo resumas. Marca "clave": true en máximo 8.` });
   const txt = CFG.claudeKey
@@ -1264,121 +1449,197 @@ function grafLinea(met, nombre, marcas){
   return s+'</svg>';
 }
 
+// Qué mide cada criterio de la calificación (se muestra en el informe)
+const CRITERIO_DEF = {
+  'Objetivo cumplido':'¿Se logró aquello para lo que era la reunión?',
+  'Decisiones tomadas':'¿Salieron decisiones claras de la reunión?',
+  'Compromisos claros (quién y cuándo)':'¿Cada tarea quedó con responsable y fecha?',
+  'Claridad de la información':'¿Lo que presentaron fue concreto y con datos?',
+  'Uso del tiempo':'¿Se fue al grano o hubo rodeos?',
+  'Valor para mí':'¿Te sirve para tu trabajo o tu decisión?'
+};
+const TIPOS = {
+  evaluar:{ nombre:'Evaluación de proveedor', icono:'checkCircle' },
+  interna:{ nombre:'Reunión interna', icono:'users' },
+  informativa:{ nombre:'Presentación', icono:'message' }
+};
+// Sección desplegable: título + resumen de una línea + flecha; el detalle aparece al abrirla
+const sec = (id, icono, titulo, resumen, cuerpo, abierto=false) =>
+  `<details class="sec" id="sec-${id}"${abierto?' open':''}><summary><span class="sec-ic">${ic(icono)}</span><span class="sec-t">${titulo}</span><span class="sec-r">${resumen}</span><span class="sec-ch">${ic('chevron')}</span></summary><div class="sec-b">${cuerpo}</div></details>`;
+
 async function mostrarInforme(id, ejemplo=null){
   const S_ = ejemplo ? ejemplo.S : await dbGet('sesiones', id);
   const caps = ejemplo ? ejemplo.caps : (await dbPorSesion('capturas', id)).sort((a,b)=>a.t-b.t);
   const {ia, met} = S_.informe; const nombre = S_.nombre;
+  const tipo = S_.tipo || 'evaluar';
+  const califica = tipo==='evaluar' && (ia.puntajes||[]).length;
   const urls = {}; for(const c of caps) urls[c.n] = c.url || URL.createObjectURL(c.blob);
   const V = veredicto(ia.puntajes);
   const comp = ia.compromisos||[], dec = ia.decisiones||[];
-  const sinDueño = comp.filter(c=>!c.responsable || c.responsable==='null').length;
-  const sinFecha = comp.filter(c=>!c.fecha || c.fecha==='null').length;
+  const vacioNull = v => (!v || v==='null') ? null : v;
+  const sinDueño = comp.filter(c=>!vacioNull(c.responsable)).length;
+  const sinFecha = comp.filter(c=>!vacioNull(c.fecha)).length;
+  const vagas = dec.filter(d=>/vaga/i.test(d.calidad||'')).length;
   const pant = ia.pantallazos||[]; const claves = pant.filter(p=>p.clave); const nombrados = new Set(pant.filter(p=>p.util!==false).map(p=>+p.n));
   const porN = {}; for(const p of pant) porN[+p.n] = p;
   const textoLeido = p => p && p.texto ? `<div class="leido"><span class="sub">Lo que dice:</span> ${esc(p.texto)}</div>` : '';
-  const fig = (p, conTexto=true)=> urls[p.n] ? `<figure><img src="${urls[p.n]}" data-n="${p.n}" alt="${esc(p.titulo||'Pantallazo '+p.n)}">
-     <figcaption><b>#${p.n} · ${esc(p.titulo||'')}</b>${conTexto? `<span class="sub">${mmss((caps.find(c=>c.n==p.n)||{}).t)}</span> ${esc(p.que_muestra||'')}${textoLeido(p)}${p.por_que_importa? `<i>Por qué importa:</i> ${esc(p.por_que_importa)}`:''}`:''}</figcaption></figure>` : '';
+  const fig = p => urls[p.n] ? `<figure><img src="${urls[p.n]}" data-n="${p.n}" alt="${esc(p.titulo||'Pantallazo '+p.n)}">
+     <figcaption><b>#${p.n} · ${esc(p.titulo||'')}</b><span class="sub">${mmss((caps.find(c=>c.n==p.n)||{}).t)}</span> ${esc(p.que_muestra||'')}${textoLeido(p)}${p.por_que_importa? `<i>Por qué importa:</i> ${esc(p.por_que_importa)}`:''}</figcaption></figure>` : '';
   const check = ia.checklist||[];
   const icoCheck = e => /✓|si|sí/i.test(e)? ['✓','var(--good)'] : /½|parcial|medias/i.test(e)? ['½','var(--warning)'] : ['✗','var(--critical)'];
   const logrados = check.filter(c=>icoCheck(c.estado)[0]==='✓').length;
   const lista = arr => arr && arr.length ? `<ul class="lista">${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="sub">Nada registrado.</div>';
-  const vacioNull = v => (!v || v==='null') ? null : v;
+  const plural = (n, uno, varios) => `${n} ${n===1?uno:varios}`;
+  const verSec = (sid, txt) => `<a href="#sec-${sid}" class="ir-a" data-abrir="${sid}">${txt}</a>`;
+  const ex = ia.expositor && vacioNull(ia.expositor.nombre) ? ia.expositor : null;
+  const M = S_.plantilla && Array.isArray(ia.matriz) ? calcularMatriz(S_.plantilla, ia.matriz) : null;
 
-  const h = `
-  ${ejemplo? `<div class="ejemplo">${ic('sparkles')} Informe de ejemplo · datos inventados para que veas cómo queda</div>`:''}
+  /* ---------- portada ---------- */
+  let h = `${ejemplo? `<div class="ejemplo">${ic('sparkles')} Informe de ejemplo · datos inventados para que veas cómo queda</div>`:''}
   <div class="card">
-    <div class="rep-hero">
+    <div class="rep-hero"${califica? '' : ' style="grid-template-columns:1fr"'}>
       <div>
-        <div class="rep-meta"><span>${ic('calendar')} ${esc(fechaTxt(S_.creada))}</span><span>${ic('clock')} ${esc(durTxt(met.duracion))}</span><span>${ic('users')} ${esc(Object.keys(met.palabras||{}).length || '—')} participantes</span></div>
+        <div class="rep-meta"><span class="pill">${ic(TIPOS[tipo].icono)} ${TIPOS[tipo].nombre}${S_.empresa? ' · '+esc(S_.empresa):''}</span><span>${ic('calendar')} ${esc(fechaTxt(S_.creada))}</span><span>${ic('clock')} ${esc(durTxt(met.duracion))}</span></div>
         <h2>${esc(ia.titulo || S_.titulo)}</h2>
         <p>${esc(ia.resumen)}</p>
+        ${vacioNull(ia.siguiente_paso)? `<div class="sig-paso">${ic('arrow')}<div><b>Siguiente paso</b><span>${esc(ia.siguiente_paso)}</span></div></div>`:''}
       </div>
-      <div class="gauge">${medidor(V.total, colorStatus(V.v))}
-        <span class="badge" style="border-color:${colorStatus(V.v)}"><span style="color:${colorStatus(V.v)}">${V.icono}</span> ${V.v}</span></div>
+      ${califica? `<div class="gauge">${medidor(V.total, colorStatus(V.v))}
+        <span class="badge" style="border-color:${colorStatus(V.v)}"><span style="color:${colorStatus(V.v)}">${V.icono}</span> Reunión: ${V.v}</span>
+        ${M? `<span class="badge" style="border-color:${M.color}"><span style="color:${M.color}">●</span> Matriz: ${M.veredicto}</span>`:''}</div>`:''}
     </div>
-  </div>
-
-  <div class="card">
-    <h3>${ic('target')} Objetivo y criterios de éxito</h3>
-    <p style="margin-bottom:12px"><b>Objetivo${S_.objetivo? '' : ' (deducido por la IA)'}:</b> ${esc(S_.objetivo || ia.objetivo_detectado || '—')} <span class="pill" style="margin-left:6px;--c:${/^s/i.test(ia.objetivo_cumplido||'')?'var(--good)':/parcial/i.test(ia.objetivo_cumplido||'')?'var(--warning)':'var(--critical)'}"><span class="pto"></span>¿Se cumplió? ${esc(ia.objetivo_cumplido||'—')}</span></p>
-    ${check.length? `<div class="tabla"><table><tr><th style="width:44px"></th><th>Criterio${(S_.criterios||[]).length? '' : ' · propuestos por la IA'}</th><th>Evidencia</th><th>Min</th></tr>
-      ${check.map(c=>{ const [sim,col]=icoCheck(c.estado); return `<tr><td style="font-size:18px;font-weight:800;color:${col};text-align:center">${sim}</td><td><b>${esc(c.criterio)}</b></td><td>${esc(c.evidencia||'')}</td><td class="min">${esc(vacioNull(c.minuto)||'')}</td></tr>`; }).join('')}</table></div>
-      <p class="ayuda">${logrados} de ${check.length} criterios conseguidos completos.</p>` : ''}
-    ${ejemplo? '' : `<details class="no-print no-export" style="margin-top:14px"><summary>Cambiar objetivo y criterios y volver a calificar</summary>
-      <div class="grid2" style="margin-top:10px">
-        <div><label>Objetivo</label><textarea id="edObjetivo">${esc(S_.objetivo||'')}</textarea></div>
-        <div><label>Criterios (uno por línea)</label><textarea id="edCriterios">${esc((S_.criterios||[]).join('\n'))}</textarea></div>
-      </div>
-      <button class="btn-primary" style="margin-top:10px" id="btnRecalificar">${ic('refresh')} Guardar y volver a calificar</button></details>`}
-  </div>
-
-  <div class="card">
-    <h3>${ic('chart')} Calificación por criterio</h3>
-    <p style="color:var(--text-2);margin-bottom:12px">${esc(ia.razon_veredicto||'')}</p>
-    <div class="chart">${grafNotas(ia.puntajes||[])}</div>
-    <p class="ayuda">Pasa el mouse por cada barra para ver la evidencia · 75+ sirvió · 50–74 parcial · menos de 50 no sirvió.</p>
   </div>
 
   <div class="kpis">
     <div class="kpi"><div class="v">${esc(durTxt(met.duracion))}</div><div class="l">duración</div></div>
     <div class="kpi"><div class="v">${met.pctYo}%</div><div class="l">del tiempo hablaste tú</div></div>
-    <div class="kpi"><div class="v">${dec.length}</div><div class="l">decisiones</div></div>
+    <div class="kpi"><div class="v">${dec.length}</div><div class="l">decisiones${vagas? ` · ${vagas} vaga${vagas>1?'s':''}`:''}</div></div>
     <div class="kpi"><div class="v">${comp.length}</div><div class="l">compromisos</div></div>
     <div class="kpi"><div class="v" style="${sinDueño+sinFecha? 'color:var(--critical)':''}">${sinDueño}/${sinFecha}</div><div class="l">compromisos sin responsable / sin fecha</div></div>
-    <div class="kpi"><div class="v">${met.capturas}</div><div class="l">pantallazos (${claves.length} clave)</div></div>
+    ${M? `<div class="kpi"><div class="v">${M.cumple}/${M.total}</div><div class="l">preguntas de la matriz cumplidas</div></div>`
+       : `<div class="kpi"><div class="v">${met.capturas}</div><div class="l">pantallazos (${claves.length} clave)</div></div>`}
   </div>
 
-  <div class="card">
-    <h3>${ic('users')} Quién habló</h3>
-    <div class="leyenda"><span><i style="background:var(--s-yo)"></i>${esc(nombre)}</span><span><i style="background:var(--s-otros)"></i>Otros participantes</span></div>
-    <div class="chart">${grafParticipacion(met, nombre)}</div>
-    <h3 style="margin-top:22px">${ic('clock')} Minuto a minuto <span class="opc" style="font-size:12.5px">· segundos con voz · ▾ pantallazo · ⭐ momento clave</span></h3>
-    <div class="chart">${grafLinea(met, nombre)}</div>
-    <h3 style="margin-top:22px">${ic('message')} Palabras por persona</h3>
-    <div class="chart">${grafPalabras(met, nombre)}</div>
-  </div>
+  <div class="sec-tools no-print"><button type="button" class="btn-ghost" data-todas="1">${ic('chevron')} Abrir todo</button><button type="button" class="btn-ghost" data-todas="0">Cerrar todo</button></div>`;
 
-  <div class="card"><h3>${ic('flag')} Decisiones</h3>
-    ${dec.length? `<div class="tabla"><table><tr><th>Min</th><th>Decisión</th><th>Quién</th><th>¿Concreta?</th></tr>${dec.map(d=>`<tr><td class="min">${esc(d.minuto||'')}</td><td>${esc(d.decision)}</td><td>${esc(vacioNull(d.quien)||'—')}</td>
+  /* ---------- quién presentó ---------- */
+  if(ex){
+    const bloque = (t, v) => vacioNull(v) ? `<div class="ex-item"><span>${t}</span><p>${esc(v)}</p></div>` : '';
+    const listaEx = (t, arr) => (arr||[]).length ? `<div class="ex-item"><span>${t}</span><ul class="lista">${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>` : '';
+    h += sec('expositor','users', `¿Quién presentó? · ${esc(ex.nombre)}`, esc(String(ex.que_es||'').slice(0,90)),
+      `<div class="ex-grid">${bloque('Qué es', ex.que_es)}${bloque('Para quién es', ex.para_quien)}${bloque('Cómo funciona', ex.como_funciona)}${bloque('Qué buscan con nosotros', ex.objetivo)}
+       ${listaEx('Qué ofrece', ex.que_ofrece)}${listaEx('Lo que los diferencia', ex.diferenciales)}${listaEx('Datos clave', ex.datos_clave)}</div>
+       <p class="ayuda">Solo con lo que se dijo o se mostró en la reunión.</p>`, true);
+  }
+
+  /* ---------- puntos clave ---------- */
+  const pk = ia.puntos_clave||[];
+  if(pk.length) h += sec('puntos','list','Puntos clave', plural(pk.length,'punto','puntos'), `<ol class="puntos">${pk.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>`, !ex);
+
+  /* ---------- matriz ---------- */
+  if(M){
+    const catFilas = M.categorias.map(c=>`<div class="cat-fila"><span class="cat-n">${esc(c.nombre)} <small>· peso ${Math.round(c.peso*100)} %</small></span>
+      <div class="cat-barra"><div style="width:${c.pct==null?0:c.pct}%;background:${c.pct==null?'var(--line-2)':c.pct>=80?'var(--good)':c.pct>=60?'var(--warning)':'var(--critical)'}"></div></div>
+      <span class="cat-v">${c.pct==null?'—':c.pct+' %'}<small> · ${c.respondidas}/${c.total}</small></span></div>`).join('');
+    const filas = M.filas.map(f=>`<tr><td class="min">${f.n}</td><td>${esc(f.q)}${f.clave?' <span class="tag-clave">CLAVE</span>':''}<div class="sub">Esperamos: ${esc(f.espera||'—')}</div></td>
+      <td style="font-size:17px;font-weight:800;text-align:center;color:${f.estado==='✓'?'var(--good)':f.estado==='½'?'var(--warning)':f.estado==='✗'?'var(--critical)':'var(--muted)'}">${f.estado||'—'}</td>
+      <td>${f.respuesta? esc(f.respuesta) : '<span class="sub">No se habló</span>'}</td><td class="min">${esc(vacioNull(f.minuto)||'')}</td></tr>`).join('');
+    const faltan = M.filas.filter(f=>!f.estado);
+    h += sec('matriz','tasks', `Matriz · ${esc(S_.plantilla.nombre||'preguntas')}`,
+      `Cumple ${M.cumple} de ${M.total} · ${M.ponderado==null?'—':M.ponderado+' % ponderado'} · <b style="color:${M.color}">${M.veredicto}</b>`,
+      `<div class="mz-res">
+        <div><span class="mz-v">${M.cumple}<small>/${M.total}</small></span><span class="mz-l">preguntas con ✓ (${Math.round(M.cumple/M.total*100)} %)</span></div>
+        <div><span class="mz-v">${M.ponderado==null?'—':M.ponderado+'%'}</span><span class="mz-l">puntaje ponderado</span></div>
+        <div><span class="mz-v">${M.respondidas}<small>/${M.total}</small></span><span class="mz-l">preguntas respondidas</span></div>
+        <div><span class="mz-v" style="color:${M.color}">${M.veredicto}</span><span class="mz-l">${M.clavesX? M.clavesX+' pregunta(s) clave en ✗' : 'veredicto con tus reglas'}</span></div>
+      </div>
+      <div class="cats">${catFilas}</div>
+      <div class="tabla"><table><tr><th>#</th><th>Pregunta</th><th style="width:60px">Estado</th><th>Lo que respondieron</th><th>Min</th></tr>${filas}</table></div>
+      ${faltan.length? `<div class="aviso" style="margin-top:14px"><b>Faltaron ${faltan.length} preguntas.</b> Pídelas por correo antes de decidir:<ul class="lista" style="margin-top:6px">${faltan.map(f=>`<li>${esc(f.q)}${f.clave?' <b>(CLAVE)</b>':''}</li>`).join('')}</ul></div>`:''}
+      <div class="row no-print" style="margin-top:12px"><button type="button" class="btn-soft" id="btnCopiarMatriz">${ic('copy')} <span>Copiar columna para el Excel</span></button></div>
+      <p class="ayuda">✓ vale 1 · ½ vale 0,5 · ✗ vale 0 · sin respuesta no cuenta. Cada categoría se promedia con sus respuestas y se pondera con tus pesos. Una pregunta CLAVE en ✗ = No apta · menos de 15 respuestas = Faltan preguntas · Recomendada ≥ 80 % · Con condiciones 60–79 % · No recomendada &lt; 60 %.</p>`);
+  }
+
+  /* ---------- objetivo y criterios ---------- */
+  h += sec('objetivo','target','Objetivo y criterios de éxito',
+    check.length ? `${logrados} de ${plural(check.length,'criterio','criterios')} conseguidos` : esc(ia.objetivo_cumplido||''),
+    `<p style="margin-bottom:12px"><b>Objetivo${S_.objetivo? '' : ' (deducido por la IA)'}:</b> ${esc(S_.objetivo || ia.objetivo_detectado || '—')} <span class="pill" style="margin-left:6px;--c:${/^s/i.test(ia.objetivo_cumplido||'')?'var(--good)':/parcial/i.test(ia.objetivo_cumplido||'')?'var(--warning)':'var(--critical)'}"><span class="pto"></span>¿Se cumplió? ${esc(ia.objetivo_cumplido||'—')}</span></p>
+    ${check.length? `<div class="tabla"><table><tr><th style="width:44px"></th><th>Criterio${(S_.criterios||[]).length? '' : ' · propuestos por la IA'}</th><th>Evidencia</th><th>Min</th></tr>
+      ${check.map(c=>{ const [sim,col]=icoCheck(c.estado); return `<tr><td style="font-size:18px;font-weight:800;color:${col};text-align:center">${sim}</td><td><b>${esc(c.criterio)}</b></td><td>${esc(c.evidencia||'')}</td><td class="min">${esc(vacioNull(c.minuto)||'')}</td></tr>`; }).join('')}</table></div>` : ''}
+    ${ejemplo? '' : `<details class="no-print no-export" style="margin-top:14px"><summary>Cambiar objetivo y criterios y volver a calificar</summary>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Objetivo</label><textarea id="edObjetivo">${esc(S_.objetivo||'')}</textarea></div>
+        <div><label>Criterios (uno por línea)</label><textarea id="edCriterios">${esc((S_.criterios||[]).join('\n'))}</textarea></div>
+      </div>
+      <button class="btn-primary" style="margin-top:10px" id="btnRecalificar">${ic('refresh')} Guardar y volver a calificar</button></details>`}`);
+
+  /* ---------- calificación ---------- */
+  if(califica){
+    const enlaces = { 'Decisiones tomadas': dec.length? verSec('decisiones', `ver las ${plural(dec.length,'decisión','decisiones')}`) : '',
+                      'Compromisos claros (quién y cuándo)': comp.length? verSec('compromisos', `ver los ${plural(comp.length,'compromiso','compromisos')}`) : '',
+                      'Objetivo cumplido': verSec('objetivo','ver objetivo y criterios') };
+    const prom = (ia.puntajes.reduce((a,p)=>a+(+p.nota||0),0)/ia.puntajes.length);
+    h += sec('calificacion','chart','Calificación de la reunión', `<b>${V.total}/100</b> · ${V.v}`,
+      `<p style="color:var(--text-2);margin-bottom:14px">${esc(ia.razon_veredicto||'')}</p>
+      <div class="crit-lista">${ia.puntajes.map(p=>{ const n = Math.max(0,Math.min(5,+p.nota||0));
+        return `<div class="crit">
+          <div class="crit-h"><b>${esc(p.criterio)}</b><span class="crit-n" style="color:${n>=4?'var(--good)':n===3?'var(--text)':'var(--critical)'}">${n}<small> / 5</small></span></div>
+          <div class="crit-barra"><div style="width:${n*20}%"></div></div>
+          <div class="crit-q">${esc(CRITERIO_DEF[p.criterio]||'')}</div>
+          <div class="crit-e">${esc(p.evidencia||'')} ${enlaces[p.criterio]||''}</div></div>`; }).join('')}</div>
+      <p class="ayuda">Cada criterio va de 1 (muy mal) a 5 (excepcional). Nota final = promedio de los ${ia.puntajes.length} criterios × 20 → ${prom.toFixed(1).replace('.',',')} × 20 = ${V.total}. Sirvió ≥ 75 · Parcial 50–74 · No sirvió &lt; 50.</p>`);
+  }
+
+  /* ---------- decisiones ---------- */
+  h += sec('decisiones','flag','Decisiones', dec.length? `${plural(dec.length,'decisión','decisiones')}${vagas? ` · <span class="falta">${vagas} vaga${vagas>1?'s':''}</span>`:''}` : '<span class="falta">ninguna</span>',
+    dec.length? `<div class="tabla"><table><tr><th>Min</th><th>Decisión</th><th>Quién</th><th>¿Concreta?</th></tr>${dec.map(d=>`<tr><td class="min">${esc(d.minuto||'')}</td><td>${esc(d.decision)}</td><td>${esc(vacioNull(d.quien)||'—')}</td>
       <td>${/vaga/i.test(d.calidad||'') ? `<span class="falta">⚠ vaga</span>${vacioNull(d.falta)? `<br><span class="sub">Falta: ${esc(d.falta)}</span>`:''}` : d.calidad ? '<span style="color:var(--good);font-weight:600">✔ concreta</span>' : '—'}</td></tr>`).join('')}</table></div>
-      <p class="ayuda">Concreta = dice qué se hace, quién y cuándo. Una decisión vaga se olvida o se interpreta distinto: ciérrala por escrito.</p>` : '<div class="aviso err">No se tomó ninguna decisión. Si la reunión era para decidir algo, eso ya es un hallazgo.</div>'}
-  </div>
+      <p class="ayuda">Concreta = dice qué se hace, quién y cuándo. Una decisión vaga se olvida o se interpreta distinto: ciérrala por escrito.</p>`
+    : `<div class="aviso">No se tomó ninguna decisión.${tipo==='evaluar'? ' Si la reunión era para decidir algo, eso ya es un hallazgo.':''}</div>`);
 
-  <div class="card"><h3>${ic('tasks')} Compromisos</h3>
-    ${comp.length? `<div class="tabla"><table><tr><th>Min</th><th>Tarea</th><th>Responsable</th><th>Fecha</th></tr>${comp.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.tarea)}</td>
+  /* ---------- compromisos ---------- */
+  h += sec('compromisos','tasks','Compromisos', comp.length? `${plural(comp.length,'compromiso','compromisos')}${sinDueño+sinFecha? ` · <span class="falta">${sinFecha} sin fecha</span>`:''}` : 'ninguno',
+    comp.length? `<div class="tabla"><table><tr><th>Min</th><th>Tarea</th><th>Responsable</th><th>Fecha</th></tr>${comp.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.tarea)}</td>
       <td>${vacioNull(c.responsable)? esc(c.responsable) : '<span class="falta">⚠ sin responsable</span>'}</td>
-      <td>${vacioNull(c.fecha)? esc(c.fecha) : '<span class="falta">⚠ sin fecha</span>'}</td></tr>`).join('')}</table></div>` : '<div class="sub">No quedaron compromisos.</div>'}
-    ${sinDueño+sinFecha? '<div class="aviso" style="margin-top:12px">Un compromiso sin responsable o sin fecha casi nunca se cumple. Cierra esos huecos por escrito hoy.</div>':''}
-  </div>
+      <td>${vacioNull(c.fecha)? esc(c.fecha) : '<span class="falta">⚠ sin fecha</span>'}</td></tr>`).join('')}</table></div>
+      ${sinDueño+sinFecha? '<div class="aviso" style="margin-top:12px">Un compromiso sin responsable o sin fecha casi nunca se cumple. Cierra esos huecos por escrito hoy.</div>':''}`
+    : '<div class="sub">No quedaron compromisos.</div>');
 
-  <div class="card"><h3>${ic('hash')} Cifras mencionadas</h3>
-    ${(ia.cifras||[]).length? `<div class="tabla"><table><tr><th>Min</th><th>Dato</th><th>Valor</th><th>Fuente</th></tr>${ia.cifras.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.dato)}</td><td><b>${esc(c.valor)}</b></td><td class="sub">${esc(c.fuente||'')}</td></tr>`).join('')}</table></div>` : '<div class="sub">No se mencionaron cifras.</div>'}
-  </div>
+  /* ---------- cifras, pantallazos, temas ---------- */
+  const cif = ia.cifras||[];
+  h += sec('cifras','hash','Cifras mencionadas', cif.length? plural(cif.length,'cifra','cifras') : 'ninguna',
+    cif.length? `<div class="tabla"><table><tr><th>Min</th><th>Dato</th><th>Valor</th><th>Fuente</th></tr>${cif.map(c=>`<tr><td class="min">${esc(c.minuto||'')}</td><td>${esc(c.dato)}</td><td><b>${esc(c.valor)}</b></td><td class="sub">${esc(c.fuente||'')}</td></tr>`).join('')}</table></div>` : '<div class="sub">No se mencionaron cifras.</div>');
+  if(claves.length) h += sec('pantallazos','image','Pantallazos clave', plural(claves.length,'pantallazo','pantallazos'), `<div class="galeria">${claves.map(fig).join('')}</div>`);
+  const tem = ia.temas||[];
+  h += sec('temas','list','Temas tratados', plural(tem.length,'tema','temas'),
+    tem.length? `<div class="tabla"><table><tr><th>Min</th><th>Tema</th><th>Resumen</th></tr>${tem.map(t=>`<tr><td class="min">${esc(t.minuto||'')}</td><td><b>${esc(t.tema)}</b> <span class="sub">${'●'.repeat(Math.max(1,Math.min(3,+t.importancia||1)))}</span></td><td>${esc(t.resumen)}</td></tr>`).join('')}</table></div>` : '<div class="sub">—</div>');
 
-  ${claves.length? `<div class="card"><h3>${ic("image")} Pantallazos clave</h3><div class="galeria">${claves.map(p=>fig(p)).join('')}</div></div>`:''}
+  /* ---------- lo dicho, riesgos, preguntas ---------- */
+  const dijeron = ia.lo_que_dijeron||[];
+  h += sec('dicho','message','Lo que se dijo', `tú ${(ia.lo_que_dije||[]).length} · los demás ${dijeron.length}`,
+    `<div class="grid2"><div><h4 class="sub-t">Lo que dijiste tú</h4>${lista(ia.lo_que_dije)}</div>
+     <div><h4 class="sub-t">Lo que dijeron los demás</h4>${dijeron.length? `<ul class="lista">${dijeron.map(x=>`<li><b>${esc(x.quien)}:</b> ${esc(x.punto)}</li>`).join('')}</ul>` : '<div class="sub">—</div>'}</div></div>`);
+  const rie = ia.riesgos||[], pa = ia.preguntas_abiertas||[];
+  h += sec('riesgos','alert','Riesgos y preguntas abiertas', `${plural(rie.length,'riesgo','riesgos')} · ${plural(pa.length,'pregunta','preguntas')}`,
+    `<div class="grid2"><div><h4 class="sub-t">Riesgos y alertas</h4>${lista(rie)}</div><div><h4 class="sub-t">Preguntas que quedaron abiertas</h4>${lista(pa)}</div></div>`);
 
-  <div class="card"><h3>${ic("list")} Temas tratados</h3>
-    ${(ia.temas||[]).length? `<div class="tabla"><table><tr><th>Min</th><th>Tema</th><th>Resumen</th></tr>${ia.temas.map(t=>`<tr><td class="min">${esc(t.minuto||'')}</td><td><b>${esc(t.tema)}</b> ${'●'.repeat(Math.max(1,Math.min(3,+t.importancia||1)))}</td><td>${esc(t.resumen)}</td></tr>`).join('')}</table></div>` : '<div class="sub">—</div>'}
-  </div>
+  /* ---------- al final: quién habló, todos los pantallazos, transcripción ---------- */
+  h += sec('participacion','users','Quién habló', `tú ${met.pctYo} % · los demás ${100-met.pctYo} %`,
+    `<div class="leyenda"><span><i style="background:var(--s-yo)"></i>${esc(nombre)}</span><span><i style="background:var(--s-otros)"></i>Otros participantes</span></div>
+    <div class="chart">${grafParticipacion(met, nombre)}</div>
+    <h4 class="sub-t" style="margin-top:20px">Minuto a minuto <span class="opc">· segundos con voz · ▾ pantallazo · ⭐ momento clave</span></h4>
+    <div class="chart">${grafLinea(met, nombre)}</div>
+    <h4 class="sub-t" style="margin-top:20px">Palabras por persona</h4>
+    <div class="chart">${grafPalabras(met, nombre)}</div>`);
+  const otros = pant.filter(p=>!p.clave && p.util!==false);
+  if(otros.length) h += sec('otros-pant','image','Otros pantallazos con información', plural(otros.length,'pantallazo','pantallazos'), `<div class="galeria">${otros.map(fig).join('')}</div>`);
+  if(caps.length > nombrados.size) h += `<div class="no-export">${sec('todos-pant','camera','Todos los pantallazos', plural(caps.length,'pantallazo','pantallazos'),
+    `<div class="galeria">${caps.map(c=>`<figure><img src="${urls[c.n]}" data-n="${c.n}" loading="lazy" alt="Pantallazo ${c.n}"><figcaption>#${c.n} · ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ clave':c.tipo}${c.nota? ' · '+esc(c.nota):''}${porN[c.n]? '<br><b>'+esc(porN[c.n].titulo||'')+'</b>'+textoLeido(porN[c.n]) : '<br><span class="sub">(no se mandó a la IA)</span>'}</figcaption></figure>`).join('')}</div>`)}</div>`;
+  h += sec('transcripcion','message','Transcripción completa', plural(S_.segmentos.length,'intervención','intervenciones'),
+    `<div class="trans">${S_.segmentos.map(s=>`<p><span class="sub">${mmss(s.t)}</span> <span class="h" style="color:${s.fuente==='yo'?'var(--s-yo)':'var(--s-otros)'}">${esc(s.hablante)}:</span> ${esc(s.texto)}</p>`).join('') || '<div class="sub">Sin transcripción.</div>'}</div>`);
 
-  <div class="grid2">
-    <div class="card"><h3>${ic("mic")} Lo que dijiste tú</h3>${lista(ia.lo_que_dije)}</div>
-    <div class="card"><h3>${ic("users")} Lo que dijeron los demás</h3>${(ia.lo_que_dijeron||[]).length? `<ul class="lista">${ia.lo_que_dijeron.map(x=>`<li><b>${esc(x.quien)}:</b> ${esc(x.punto)}</li>`).join('')}</ul>` : '<div class="sub">—</div>'}</div>
-    <div class="card"><h3>${ic("alert")} Riesgos y alertas</h3>${lista(ia.riesgos)}</div>
-    <div class="card"><h3>${ic("help")} Preguntas abiertas</h3>${lista(ia.preguntas_abiertas)}</div>
-  </div>
+  h += `<p class="ayuda centro" style="margin-top:18px">Generado ${esc(fechaTxt(S_.informe.generado||Date.now()))} con ${esc(S_.informe.modelo||'')} · El resumen, las notas y la matriz son interpretación de la IA; los tiempos y conteos son medidos.${S_.informe.fallidos? ` · ⚠ ${S_.informe.fallidos} bloque(s) de audio no se pudieron transcribir.`:''}</p>`;
 
-  <div class="card siguiente"><h3>${ic("arrow")} Siguiente paso recomendado</h3><p>${esc(ia.siguiente_paso||'—')}</p></div>
-
-  ${pant.filter(p=>!p.clave && p.util!==false).length? `<div class="card"><h3>${ic("image")} Otros pantallazos con información</h3><div class="galeria">${pant.filter(p=>!p.clave && p.util!==false).map(p=>fig(p)).join('')}</div></div>`:''}
-
-  ${caps.length > nombrados.size? `<div class="card no-export"><details><summary>${ic("camera")} Todos los pantallazos (${caps.length})</summary><div class="galeria" style="margin-top:10px">${caps.map(c=>`<figure><img src="${urls[c.n]}" data-n="${c.n}" loading="lazy" alt="Pantallazo ${c.n}"><figcaption>#${c.n} · ${mmss(c.t)} · ${c.tipo==='clave'?'⭐ clave':c.tipo}${c.nota? ' · '+esc(c.nota):''}${porN[c.n]? '<br><b>'+esc(porN[c.n].titulo||'')+'</b>'+textoLeido(porN[c.n]) : '<br><span class="sub">(no se mandó a la IA)</span>'}</figcaption></figure>`).join('')}</div></details></div>`:''}
-
-  <div class="card"><details><summary>${ic("message")} Transcripción completa (${S_.segmentos.length} intervenciones)</summary>
-    <div class="trans" style="margin-top:10px">${S_.segmentos.map(s=>`<p><span class="sub">${mmss(s.t)}</span> <span class="h" style="color:${s.fuente==='yo'?'var(--s-yo)':'var(--s-otros)'}">${esc(s.hablante)}:</span> ${esc(s.texto)}</p>`).join('') || '<div class="sub">Sin transcripción.</div>'}</div>
-  </details></div>
-
-  <div class="sub" style="text-align:center">Generado ${esc(fechaTxt(S_.informe.generado||Date.now()))} con ${esc(S_.informe.modelo||'')} · Las notas y el resumen son interpretación de la IA; las métricas de tiempo y conteos son medidos.${S_.informe.fallidos? ` · ⚠ ${S_.informe.fallidos} bloque(s) de audio no se pudieron transcribir.`:''}</div>`;
   $('informe').innerHTML = h;
   if($('btnRecalificar')) $('btnRecalificar').onclick = async ()=>{
     if(!confirm('¿Guardar el objetivo y los criterios y pedirle a la IA que vuelva a calificar la reunión?')) return;
@@ -1386,9 +1647,36 @@ async function mostrarInforme(id, ejemplo=null){
     s.objetivo = $('edObjetivo').value.trim(); s.criterios = leerCriterios($('edCriterios').value);
     await dbPut('sesiones', s); S = s; leerCfg(); generarInforme(id);
   };
+  if($('btnCopiarMatriz')) $('btnCopiarMatriz').onclick = async ()=>{
+    // una línea por pregunta, en el orden de la matriz: se pega en la columna de la transportadora
+    const txt = M.filas.map(f=>f.estado||'').join('\n'); const lb = $('btnCopiarMatriz').querySelector('span');
+    try{ await navigator.clipboard.writeText(txt); lb.textContent='Copiado ✔ · pégalo en la celda de la pregunta 1'; }catch(e){ lb.textContent='No se pudo copiar'; }
+    setTimeout(()=>lb.textContent='Copiar columna para el Excel', 3000);
+  };
   $('informe').dataset.sesion = ejemplo ? '' : id;
   $('btnRegenerar').classList.toggle('hide', !!ejemplo);
   vista('vInforme');
+}
+
+// Mismas reglas que la matriz de Excel del usuario
+function calcularMatriz(pl, resp){
+  const porN = {}; for(const r of resp||[]) porN[+r.n] = r;
+  const norm = e => { e = String(e||'').trim(); return /^✓|^si$|^sí$/i.test(e)?'✓' : /^½|parcial|medias/i.test(e)?'½' : /^✗|^x$|^no$/i.test(e)?'✗' : ''; };
+  const filas = pl.preguntas.map(p=>{ const r = porN[+p.n]||{}; const estado = norm(r.estado); return {...p, estado, respuesta: estado? (r.respuesta||'') : (r.respuesta||''), minuto: r.minuto}; });
+  const val = e => e==='✓'?1 : e==='½'?0.5 : 0;
+  const cats = [...new Set(pl.preguntas.map(p=>p.cat))];
+  const categorias = cats.map(c=>{ const fs = filas.filter(f=>f.cat===c), resp_ = fs.filter(f=>f.estado);
+    return { nombre:c, peso: pl.pesos?.[c] ?? (1/cats.length), total: fs.length, respondidas: resp_.length,
+      pct: resp_.length ? Math.round(resp_.reduce((a,f)=>a+val(f.estado),0)/resp_.length*100) : null }; });
+  const conDato = categorias.filter(c=>c.pct!=null), sumW = conDato.reduce((a,c)=>a+c.peso,0);
+  const ponderado = sumW ? Math.round(conDato.reduce((a,c)=>a+c.peso*c.pct,0)/sumW) : null;
+  const respondidas = filas.filter(f=>f.estado).length, cumple = filas.filter(f=>f.estado==='✓').length;
+  const clavesX = filas.filter(f=>f.clave && f.estado==='✗').length;
+  const minimo = Math.ceil(filas.length*0.75); // en la matriz de 20 = 15, igual que el Excel
+  const veredicto = !respondidas ? 'Sin evaluar' : clavesX ? 'No apta' : respondidas < minimo ? 'Faltan preguntas'
+    : ponderado >= 80 ? 'Recomendada' : ponderado >= 60 ? 'Con condiciones' : 'No recomendada';
+  const color = veredicto==='Recomendada' ? 'var(--good)' : veredicto==='Con condiciones' || veredicto==='Faltan preguntas' ? 'var(--warning)' : veredicto==='Sin evaluar' ? 'var(--muted)' : 'var(--critical)';
+  return { filas, categorias, ponderado, respondidas, cumple, total: filas.length, clavesX, veredicto, color };
 }
 
 /* ---- acciones del informe ---- */
@@ -1397,7 +1685,11 @@ $('btnImprimir').onclick = ()=>window.print();
 $('btnRegenerar').onclick = ()=>{ const id=$('informe').dataset.sesion; if(id && confirm('¿Volver a pedir el análisis a la IA ('+motorInforme()+')? Si es de pago, vuelve a cobrar.')) generarInforme(id); };
 $('btnCopiar').onclick = async ()=>{
   const id = $('informe').dataset.sesion; const S_ = id ? await dbGet('sesiones', id) : EJEMPLO.S; const ia = S_.informe.ia; const V = veredicto(ia.puntajes);
-  const t = [`*${ia.titulo||S_.titulo}* (${fechaTxt(S_.creada)})`, `Resultado: ${V.v} (${V.total}/100)`, '', ia.resumen, '',
+  const M = S_.plantilla && Array.isArray(ia.matriz) ? calcularMatriz(S_.plantilla, ia.matriz) : null;
+  const t = [`*${ia.titulo||S_.titulo}* (${fechaTxt(S_.creada)})`,
+    ...((S_.tipo||'evaluar')==='evaluar' && (ia.puntajes||[]).length ? [`Resultado de la reunión: ${V.v} (${V.total}/100)`] : []),
+    ...(M ? [`Matriz: cumple ${M.cumple} de ${M.total} · ${M.ponderado??'—'} % ponderado · ${M.veredicto}`] : []),
+    '', ia.resumen, '', ...((ia.puntos_clave||[]).length ? ['*Puntos clave:*', ...ia.puntos_clave.map(p=>'• '+p), ''] : []),
     '*Decisiones:*', ...(ia.decisiones||[]).map(d=>'• '+d.decision), '', '*Compromisos:*',
     ...(ia.compromisos||[]).map(c=>`• ${c.tarea} — ${c.responsable||'¿quién?'} — ${c.fecha||'¿cuándo?'}`), '', '*Siguiente paso:* '+(ia.siguiente_paso||'')].join('\n');
   const lb = $('btnCopiar').querySelector('span');
@@ -1425,6 +1717,14 @@ document.addEventListener('mousemove', e=>{
   tip.textContent = g.getAttribute('data-tip'); tip.style.display='block';
   const x = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left = x+'px'; tip.style.top = (e.clientY+14)+'px';
 });
+// enlaces "ver las 3 decisiones" y botones abrir/cerrar todo
+document.addEventListener('click', e=>{
+  const a = e.target.closest('[data-abrir]');
+  if(a){ e.preventDefault(); const d = $('sec-'+a.dataset.abrir); if(d){ d.open = true; d.scrollIntoView({behavior:'smooth', block:'start'}); } return; }
+  const t = e.target.closest('[data-todas]');
+  if(t){ document.querySelectorAll('#informe details.sec').forEach(d=>d.open = t.dataset.todas==='1'); }
+});
+window.addEventListener('beforeprint', ()=>document.querySelectorAll('#informe details').forEach(d=>d.open = true));
 document.addEventListener('click', e=>{
   if(e.target.matches('.galeria img')){ $('lightbox').querySelector('img').src = e.target.src; $('lightbox').style.display='flex'; }
   else if(e.target.closest('#lightbox')) $('lightbox').style.display='none';
@@ -1437,10 +1737,14 @@ async function pintarHistorial(){
   if(!ses.length){ $('historial').innerHTML = `<div class="hist-vacio"><span class="card-ic">${ic('file')}</span><b style="color:var(--text)">Todavía no hay reuniones</b><span>Cuando termines la primera, el informe aparece aquí.</span></div>`; return; }
   $('historial').innerHTML = ses.map(s=>{
     const listo = s.estado==='listo' && s.informe;
-    const V = listo ? veredicto(s.informe.ia.puntajes) : null;
-    const nota = listo ? `<div class="hist-nota" style="--c:${colorStatus(V.v)}">${V.total}<small>/100</small></div>`
+    const tp = s.tipo || 'evaluar', conNota = listo && tp==='evaluar' && (s.informe.ia.puntajes||[]).length;
+    const V = conNota ? veredicto(s.informe.ia.puntajes) : null;
+    const nota = conNota ? `<div class="hist-nota" style="--c:${colorStatus(V.v)}">${V.total}<small>/100</small></div>`
+      : listo ? `<div class="hist-nota" style="--c:var(--accent);color:var(--accent)">${ic(TIPOS[tp].icono)}</div>`
       : `<div class="hist-nota" style="--c:var(--warning);color:var(--muted)">${ic('alert')}</div>`;
-    const estado = listo ? `<span class="pill" style="--c:${colorStatus(V.v)}"><span class="pto"></span>${V.v}</span>` : `<span class="pill" style="--c:var(--warning)"><span class="pto"></span>Sin informe</span>`;
+    const estado = conNota ? `<span class="pill" style="--c:${colorStatus(V.v)}"><span class="pto"></span>${V.v}</span>`
+      : listo ? `<span class="pill" style="--c:var(--accent)"><span class="pto"></span>${TIPOS[tp].nombre}</span>`
+      : `<span class="pill" style="--c:var(--warning)"><span class="pto"></span>Sin informe</span>`;
     return `<div class="hist-item">${nota}
       <div class="hist-main"><b>${esc(s.informe?.ia?.titulo || s.titulo)}</b><span>${esc(fechaTxt(s.creada))} · ${esc(durTxt(s.duracion||0))} · ${s.nCapturas||0} pantallazos</span></div>
       <div class="hist-acc">${estado}
@@ -1503,9 +1807,21 @@ const EJEMPLO = (()=>{
     riesgos:['El 94 % de cumplimiento es dato de ellos, sin soporte.','Sin cobertura rural en Putumayo.'],
     preguntas_abiertas:['¿Cuál es el costo de recaudo contra entrega?','¿Quién recoge en bodega y a qué hora?'],
     pantallazos:[{n:1,titulo:'Propuesta de servicio',que_muestra:'Portada con alcance del servicio',texto:'Cobertura nacional: 1.100 municipios · Entrega en 24–72 h en ciudades principales · Recaudo contra entrega incluido',por_que_importa:'Dice que el recaudo está incluido, pero no su costo',util:true,clave:false},{n:2,titulo:'Tarifas por kilo',que_muestra:'Tabla de tarifas local, nacional y especial',texto:'Local: $7.900 · Nacional: $11.500 · Trayectos especiales: $18.200 + 1,5 % seguro',por_que_importa:'Es la cifra para comparar con Coordinadora',util:true,clave:true},{n:3,titulo:'Cobertura sur',que_muestra:'Tiempos a Mocoa y Puerto Asís',texto:'Mocoa: 3–4 días · Puerto Asís: 5 días (vía terrestre) · Sin cobertura en zonas rurales',por_que_importa:'Responde la duda principal de Putumayo',util:true,clave:true},{n:4,titulo:'Indicadores',que_muestra:'Cumplimiento y novedades',texto:'Entregas a tiempo: 94 % · Novedades: 3,2 % · Tiempo de respuesta PQR: 48 h',por_que_importa:'Hay que pedir soporte de estos datos',util:true,clave:false}],
-    siguiente_paso:'Escribirle hoy a Carolina pidiendo la propuesta con fecha límite (viernes) e incluir el costo del recaudo.'
+    siguiente_paso:'Escribirle hoy a Carolina pidiendo la propuesta con fecha límite (viernes) e incluir el costo del recaudo.',
+    puntos_clave:['Putumayo se cobra como trayecto especial: $18.200 por kilo más 1,5 % de seguro.','A Mocoa entregan en 3 a 4 días y a Puerto Asís en 5; no cubren zonas rurales.','Tienen cobertura en 1.100 municipios y el recaudo contra entrega está incluido, pero no dijeron cuánto cuesta.','Dicen que entregan a tiempo el 94 %, sin mostrar soporte.','Quedó pedir la propuesta formal por escrito y evaluar un piloto, sin fecha ni volumen.'],
+    expositor:{nombre:'V2GO', que_es:'Transportadora de paquetería nacional con reparto propio en ciudades principales.', para_quien:'Tiendas en línea que despachan a todo el país.', como_funciona:'Recogen en la bodega del cliente y entregan con su red; para municipios lejanos usan aliados.', objetivo:'Quedarse con parte de los envíos nacionales y los de Putumayo.', que_ofrece:['Envíos nacionales con tarifa por kilo','Recaudo contra entrega','Rastreo en línea'], diferenciales:['Cobertura en 1.100 municipios','Asesor asignado'], datos_clave:['94 % de entregas a tiempo (dato de ellos)','3,2 % de novedades','Respuesta a PQR en 48 h']},
+    matriz:[{n:1,estado:'✓',respuesta:'Recogen en bodega de lunes a viernes sin costo.',minuto:'02:10'},{n:2,estado:'',respuesta:''},{n:3,estado:'½',respuesta:'Dicen que sí, pero no dieron ejemplos de otros clientes.',minuto:'05:30'},{n:4,estado:'✓',respuesta:'Mocoa 3–4 días, Puerto Asís 5 días.',minuto:'13:20'},{n:5,estado:'✓',respuesta:'Asesora fija: Carolina.',minuto:'01:00'},{n:6,estado:'½',respuesta:'94 % a tiempo, sin soporte.',minuto:'25:20'},{n:7,estado:'✓',respuesta:'Entregan tabla de tarifas por kilo.',minuto:'06:50'},{n:8,estado:'',respuesta:''}]
   };
-  const S = { id:'', creada: Date.now()-3600e3, titulo:'Reunión V2GO', objetivo:'Decidir si hacemos un piloto con V2GO para envíos a Putumayo', criterios:['Precio por kilo a Putumayo','Días de entrega a Mocoa','Fecha de inicio del piloto'], nombre:'Jhojan', motivoFin:'Se dejó de compartir la pantalla', segmentos:segs, duracion:1890, marcas:[{t:780,nota:'cobertura Putumayo'}] };
+  const plantillaEjemplo = { id:'ej', nombre:'transportadoras (ejemplo)', pesos:{'Servicio':0.4,'Calidad':0.35,'Costo':0.25}, contexto:[], preguntas:[
+    {n:1,cat:'Servicio',q:'¿Recoge en nuestra bodega de lunes a viernes?',espera:'Sí, sin costo',clave:true},
+    {n:2,cat:'Servicio',q:'¿Su hora de corte es al mediodía o después?',espera:'Corte ≥ 12:00',clave:false},
+    {n:3,cat:'Servicio',q:'¿Puede recoger más de 100 guías en un día?',espera:'Sí, con ejemplos',clave:false},
+    {n:4,cat:'Servicio',q:'¿Cubre los municipios apartados de nuestra lista?',espera:'Municipio por municipio',clave:false},
+    {n:5,cat:'Calidad',q:'¿Nos asigna un asesor con contacto directo?',espera:'Asesor fijo',clave:true},
+    {n:6,cat:'Calidad',q:'¿Entrega a tiempo el 85 % o más?',espera:'≥ 85 % con soporte',clave:false},
+    {n:7,cat:'Costo',q:'¿Entrega la tarifa por escrito por rangos de peso?',espera:'Tabla por escrito',clave:true},
+    {n:8,cat:'Costo',q:'¿Gira el recaudo en 8 días o menos?',espera:'≤ 8 días',clave:false}]};
+  const S = { id:'', creada: Date.now()-3600e3, titulo:'Reunión V2GO', tipo:'evaluar', empresa:'V2GO', plantilla: plantillaEjemplo, objetivo:'Decidir si hacemos un piloto con V2GO para envíos a Putumayo', criterios:['Precio por kilo a Putumayo','Días de entrega a Mocoa','Fecha de inicio del piloto'], nombre:'Jhojan', motivoFin:'Se dejó de compartir la pantalla', segmentos:segs, duracion:1890, marcas:[{t:780,nota:'cobertura Putumayo'}] };
   S.informe = { ia, met:{ duracion:1890, vozYo:0, vozOtros:0, pctYo:0, palabras:{}, totalPalabras:0, capturas:4, marcas:1, actividad:act, capT:caps.map(c=>({t:c.t,tipo:c.tipo})) }, generado: Date.now(), modelo:'ejemplo' };
   const m = S.informe.met; m.vozYo = act.reduce((a,x)=>a+x.yo,0); m.vozOtros = act.reduce((a,x)=>a+x.otros,0); m.pctYo = Math.round(m.vozYo/(m.vozYo+m.vozOtros)*100);
   m.palabras = {'Jhojan':1240,'Carolina (V2GO)':2610,'Andrés (V2GO)':980}; m.totalPalabras = 4830;
